@@ -4,32 +4,34 @@ import TableViewIcon from '@mui/icons-material/TableView';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import { useTheme } from '@mui/material/styles';
 function LeftBar() {
+  const theme = useTheme()
   return (
-    <div className='container'>
-      <div className='bar'>
-        <a href="#profitloss">
-          <ThumbsUpDownIcon></ThumbsUpDownIcon>
 
-        </a>
-        <a href="#kpi">
-          <TableViewIcon color='white'></TableViewIcon>
+    <div className='bar'>
+      <a href="#profitloss">
+        <ThumbsUpDownIcon style={{ color: "white" }}></ThumbsUpDownIcon>
 
-        </a>
-        <a href="#finperform" >
-          <TimelineIcon color='white'></TimelineIcon>
+      </a>
+      <a href="#kpi">
+        <TableViewIcon style={{ color: "white" }}></TableViewIcon>
 
-        </a>
-        <a href="#cash">
-          <LocalAtmIcon >
+      </a>
+      <a href="#finperform" >
+        <TimelineIcon style={{ color: "white" }}></TimelineIcon>
 
-          </LocalAtmIcon>
+      </a>
+      <a href="#cash">
+        <LocalAtmIcon style={{ color: "white" }} >
 
-        </a>
+        </LocalAtmIcon>
 
-      </div>
+      </a>
 
-    </div >
+    </div>
+
+
   )
 }
 

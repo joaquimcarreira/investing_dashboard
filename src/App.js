@@ -1,22 +1,13 @@
-
-
-
 import { useState, useEffect } from "react";
-
-import { makeStyles } from "@material-ui/core/styles";
-
 import "./App.css"
 import ToolBar from "@mui/material/Toolbar";
 import CashFlow from "./components/cash";
 import Kpi from "./components/kpi";
 import ProfitLoss from "./components/profitLoss";
 import FinPerformance from "./components/finPerformance";
-import AppBar from "./components/appBar";
+import TopBar from "./components/topbar/appBar"
 import LeftBar from "./components/leftBar/leftBar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-
-
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -24,43 +15,12 @@ const theme = createTheme({
       main: "#212121",
     },
     secondary: {
-      main: "#ffffff",
+      main: "#000000",
     },
   },
 });
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: "flex",
-    flexDirection:"column",
-
-    height:"100%",
-    // overflow: "hidden",
-    background: "black",
-    flexDirection:"column",
-    paddingRight:"10px",
-    paddingLeft:"10px",
-
-    
-  },
-  mainContainer : {
-      display:"flex",
-      flexDirection:"row",    
-      justifyContent:"end",
-      scrollBehavior:"smooth",
-      scrollSnapType:"y mandatory",
-
-      
-    }
-
-}));
-
-
-
-
-
 function App(props) {
   const [tickers, setTickers] = useState([]);
-
   const [balance, setBalance] = useState({});
   const [cashFlow, setCashFlow] = useState({});
   const [income, setIncome] = useState({});
@@ -71,7 +31,7 @@ function App(props) {
   const [fpData, setFpData] = useState({});
   const [inputTicker, setInputTicker] = useState("");
   const [loading,setLoading] = useState(true)
-  const classes = useStyles();
+
 
   // const inputToTicker = (inputData) => {
   //   setInputTicker(inputData);
@@ -341,17 +301,17 @@ function App(props) {
   return (
     <div className="app">
       <ThemeProvider theme={theme}>      
-          <div className={classes.container}>
-            <ToolBar />
+          <div className="container">
+
             <LeftBar></LeftBar> 
-          
-            <div className={classes.mainContainer}>              
-{            !loading ?   <div className="sections">
-                <ProfitLoss plData={plData}></ProfitLoss>
-                <Kpi kpiData={kpiData}></Kpi>
-                <FinPerformance fpData={fpData}></FinPerformance>
-                <CashFlow {...props} cashData={cashData}></CashFlow>            
-              </div> : null}
+            <div className="mainContainer">              
+              <TopBar></TopBar>
+  {            !loading ?   <div className="sections">
+                  <ProfitLoss plData={plData}></ProfitLoss>
+                  <Kpi kpiData={kpiData}></Kpi>
+                  <FinPerformance fpData={fpData}></FinPerformance>
+                  <CashFlow {...props} cashData={cashData}></CashFlow>            
+                </div> : null}
             </div>       
           </div>      
       </ThemeProvider>
