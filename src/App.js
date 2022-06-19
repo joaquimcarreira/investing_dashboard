@@ -1,18 +1,13 @@
-import Drawer from "./components/drawer";
-import { styled } from "@mui/material/styles";
 import { useState, useEffect } from "react";
-import { BrowserRouter, Route } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@mui/material/Typography";
-import { Box } from "@mui/material/Box";
+import "./App.css"
 import ToolBar from "@mui/material/Toolbar";
 import CashFlow from "./components/cash";
 import Kpi from "./components/kpi";
 import ProfitLoss from "./components/profitLoss";
 import FinPerformance from "./components/finPerformance";
-import TopBar from "./components/appBar";
+import TopBar from "./components/topbar/appBar"
+import LeftBar from "./components/leftBar/leftBar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -20,58 +15,12 @@ const theme = createTheme({
       main: "#212121",
     },
     secondary: {
-      main: "#ffffff",
+      main: "#000000",
     },
   },
 });
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: "flex",
-    height: "100vh",
-    overflow: "hidden",
-  },
-}));
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color={theme.palette.primary.contrastText}
-      align="center"
-      marginTop="20px"
-      {...props}
-    >
-      {"Copyright © Joaquim Carreira "}
-
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
-  ({ theme, open }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: 0,
-    height: "100%",
-    backgroundColor: theme.palette.primary.dark,
-    ...(open && {
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    }),
-  })
-);
-
 function App(props) {
   const [tickers, setTickers] = useState([]);
-  const [open, setOpen] = useState(true);
   const [balance, setBalance] = useState({});
   const [cashFlow, setCashFlow] = useState({});
   const [income, setIncome] = useState({});
@@ -80,13 +29,14 @@ function App(props) {
   const [kpiData, setKpiData] = useState({});
   const [plData, setplData] = useState({});
   const [fpData, setFpData] = useState({});
-  const [inputTicker, setInputTicker] = useState("");
-  const classes = useStyles();
+  const [inputTicker, setInputTicker] = useState(" ");
+  const [loading,setLoading] = useState(true)
 
-  const inputToTicker = (inputData) => {
-    setInputTicker(inputData);
-    console.log(inputTicker);
-  };
+
+  // const inputToTicker = (inputData) => {
+  //   setInputTicker(inputData);
+  //   console.log(inputTicker);
+  // };
 
   useEffect(() => {
     // const sortBydates = (a, b) => {
@@ -111,418 +61,279 @@ function App(props) {
       obj.enddate = month + " " + date.getFullYear();
       return obj;
     };
-    fetch("http://127.0.0.1:8000/indicator/" + inputTicker)
-      .then((response) => response.json())
-      .then((data) => {
-        setRatios(
-          data
-            .sort((a, b) => {
-              return new Date(a.enddate) - new Date(b.enddate);
-            })
-            .map(transformDateFormat)
-        );
-      });
-    fetch("http://127.0.0.1:8000/tickers").then((response) =>
-      response.json().then((data) => setTickers(data))
-    );
-    fetch("http://127.0.0.1:8000/income/" + inputTicker)
-      .then((response) => response.json())
-      .then((data) =>
-        setIncome(
-          data
-            .sort((a, b) => {
-              return new Date(a.enddate) - new Date(b.enddate);
-            })
-            .map(transformDateFormat)
-        )
-      );
-    fetch("http://127.0.0.1:8000/cashflow/" + inputTicker)
-      .then((response) => response.json())
-      .then((data) =>
-        setCashFlow(
-          data
-            .sort((a, b) => {
-              return new Date(a.enddate) - new Date(b.enddate);
-            })
-            .map(transformDateFormat)
-        )
-      );
-    fetch("http://127.0.0.1:8000/balance/" + inputTicker)
-      .then((response) => response.json())
-      .then((data) =>
-        setBalance(
-          data
-            .sort((a, b) => {
-              return new Date(a.enddate) - new Date(b.enddate);
-            })
-            .map(transformDateFormat)
-        )
-      );
-  }, [inputTicker]);
-
-  // async function proccesData() {
-  //   const addAvgtoBalances = (listOfBalances) => {
-  //     for (let i = 1; i < listOfBalances.length; i++) {
-  //       listOfBalances[i].avginventory =
-  //         (listOfBalances[i].inventory + listOfBalances[i - 1].inventory) / 2;
-  //       listOfBalances[i].avgpayable =
-  //         (listOfBalances[i].accountspayable +
-  //           listOfBalances[i - 1].accountspayable) /
-  //         2;
-  //       listOfBalances[i].avgnetreceivable =
-  //         (listOfBalances[i].netreceivables +
-  //           listOfBalances[i - 1].netreceivables) /
-  //         2;
-  //     }
-
-  //     return listOfBalances;
-  //   };
-  //   const balanceQuarter = addAvgtoBalances(selectPeriod(balance, "Q"));
-  //   const balanceYear = addAvgtoBalances(selectPeriod(balance, "FY"));
-  //   const cashQuarter = selectPeriod(cashFlow, "Q");
-  //   const incomeQuarter = selectPeriod(income, "Q");
-  //   const incomeYear = selectPeriod(income, "FY");
-  //   const ratiosQuarter = selectPeriod(ratios, "Q");
-
-  //   console.log(ratiosQuarter);
-  //   const lastCurrentRatio = getLast(ratiosQuarter).currentratio;
-  //   const lastAcidRatio = getLast(ratiosQuarter).acidratio;
-  //   const cashBalance =
-  //     getLast(cashQuarter).totalcashfromoperatingactivities +
-  //     getLast(cashQuarter).totalcashflowsfrominvestingactivities +
-  //     getLast(cashQuarter).totalcashfromfinancingactivities;
-  //   const cashOperations =
-  //     getLast(cashQuarter).totalcashfromoperatingactivities;
-  //   const cashInvested =
-  //     getLast(cashQuarter).totalcashflowsfrominvestingactivities;
-  //   const cashFinancing = getLast(cashQuarter).totalcashfromfinancingactivities;
-
-  //   const daysOuts = (data1, data2, Q = true) => {
-  //     var daysOutsList = [];
-  //     let days = 90;
-  //     if (Q === false) {
-  //       days = 365;
-  //     }
-  //     if (data1 !== "undifined" || data2 !== "undifined") {
-  //       for (let i = 1; i < data1.length; i++) {
-  //         const daySales = Math.round(
-  //           data1[i].avgnetreceivable / (data2[i].totalrevenue / days)
-  //         );
-  //         const daysInv = Math.round(
-  //           (data1[i].avginventory / data2[i].costofrevenue) * days
-  //         );
-  //         const daysPay = Math.round(
-  //           data1[i].avgpayable / (data2[i].totalrevenue / days)
-  //         );
-  //         const ccc = daySales + daysInv - daysPay;
-
-  //         daysOutsList.push({
-  //           enddate: data1[i].enddate,
-  //           daysinvtouts: daysInv,
-  //           dayssalesouts: daySales,
-  //           dayspayouts: -daysPay,
-  //           ccc: ccc,
-  //         });
-  //       }
-  //     } else {
-  //       setTimeout(daysOuts, 250);
-  //     }
-
-  //     return daysOutsList;
-  //   };
-  //   const daysOutstandingQuarter = daysOuts(balanceQuarter, incomeQuarter);
-  //   const daysOutstandingYear = daysOuts(balanceYear, incomeYear, false);
-  //   const daySalesOutstanding = getLast(daysOutstandingQuarter).dayssalesouts;
-  //   const daysInventoryOutstanding = getLast(
-  //     daysOutstandingQuarter
-  //   ).daysinvtouts;
-
-  //   const daysPayablesOutstanding = getLast(daysOutstandingQuarter).dayspayouts;
-
-  //   setCashData({
-  //     lastCurrentRatio,
-  //     lastAcidRatio,
-  //     cashBalance,
-  //     cashOperations,
-  //     cashInvested,
-  //     cashFinancing,
-  //     ratiosQuarter,
-  //     balanceQuarter,
-  //     cashQuarter,
-  //     daySalesOutstanding,
-  //     daysInventoryOutstanding,
-  //     daysPayablesOutstanding,
-  //     daysOutstandingQuarter,
-  //   });
-
-  //   const histWorkingCapital = (data) => {
-  //     let histWork = [];
-  //     if (data !== "undefined") {
-  //       for (let i = 0; i < data.length; i++) {
-  //         const workingCapital =
-  //           data[i].totalcurrentassets - data[i].totalcurrentliabilities;
-  //         let obj = {
-  //           enddate: data[i].enddate,
-  //           workingcapital: workingCapital,
-  //         };
-  //         histWork.push(obj);
-  //       }
-  //       return histWork;
-  //     } else {
-  //       setTimeout(histWorkingCapital, 250);
-  //     }
-  //   };
-  //   const currentAssets = getLast(balanceQuarter).totalcurrentassets;
-  //   const cash = getLast(balanceQuarter).cash;
-  //   const accountsPayable = getLast(balanceQuarter).accountspayable;
-  //   const netReceivable = getLast(balanceQuarter).netreceivables;
-  //   const inventory = getLast(balanceQuarter).inventory;
-  //   const otherCurrentAssets = currentAssets - cash - netReceivable - inventory;
-  //   const currentLiab = getLast(balanceQuarter).totalcurrentliabilities;
-  //   const shortTermDebt = getLast(balanceQuarter).shortlongtermdebt;
-  //   const otherCurrentLiab = currentLiab - shortTermDebt - accountsPayable;
-  //   const workingCapital = currentAssets - currentLiab;
-  //   const historicalWorkingCapital = histWorkingCapital(balanceQuarter);
-
-  //   setKpiData({
-  //     currentAssets,
-  //     cash,
-  //     inventory,
-  //     netReceivable,
-  //     otherCurrentAssets,
-  //     accountsPayable,
-  //     shortTermDebt,
-  //     currentLiab,
-  //     otherCurrentLiab,
-  //     daysOutstandingYear,
-  //     workingCapital,
-  //     historicalWorkingCapital,
-  //   });
-
-  //   const lastIncomeQuarter = getLast(incomeQuarter);
-  //   const lastRatio = getLast(ratiosQuarter);
-  //   const lastOpex =
-  //     lastIncomeQuarter.totaloperatingexpenses / lastIncomeQuarter.totalrevenue;
-  //   setplData({
-  //     lastIncomeQuarter,
-  //     lastRatio,
-  //     lastOpex,
-  //     incomeQuarter,
-  //   });
-  //   const lastBalanceQuarter = getLast(balanceQuarter);
-  //   setFpData({
-  //     ratiosQuarter,
-  //     lastRatio,
-  //     balanceQuarter,
-  //     lastBalanceQuarter,
-  //     workingCapital,
-  //     historicalWorkingCapital,
-  //   });
-  // }
-  // let dataDone = false;
-  // const setDataDone = () => {
-  //   dataDone = true;
-  // };
-  // proccesData().then(setDataDone());
-
-  useEffect(() => {
-    const addAvgtoBalances = (listOfBalances) => {
-      for (let i = 1; i < listOfBalances.length; i++) {
-        listOfBalances[i].avginventory =
-          (listOfBalances[i].inventory + listOfBalances[i - 1].inventory) / 2;
-        listOfBalances[i].avgpayable =
-          (listOfBalances[i].accountspayable +
-            listOfBalances[i - 1].accountspayable) /
-          2;
-        listOfBalances[i].avgnetreceivable =
-          (listOfBalances[i].netreceivables +
-            listOfBalances[i - 1].netreceivables) /
-          2;
-      }
-
-      return listOfBalances;
-    };
-    const balanceQuarter = addAvgtoBalances(selectPeriod(balance, "Q"));
-    const balanceYear = addAvgtoBalances(selectPeriod(balance, "FY"));
-    const cashQuarter = selectPeriod(cashFlow, "Q");
-    const incomeQuarter = selectPeriod(income, "Q");
-    const incomeYear = selectPeriod(income, "FY");
-    const ratiosQuarter = selectPeriod(ratios, "Q");
-
-  
-    const lastCurrentRatio = getLast(ratiosQuarter).currentratio;
-    const lastAcidRatio = getLast(ratiosQuarter).acidratio;
-    const cashBalance =
-      getLast(cashQuarter).totalcashfromoperatingactivities +
-      getLast(cashQuarter).totalcashflowsfrominvestingactivities +
-      getLast(cashQuarter).totalcashfromfinancingactivities;
-    const cashOperations =
-      getLast(cashQuarter).totalcashfromoperatingactivities;
-    const cashInvested =
-      getLast(cashQuarter).totalcashflowsfrominvestingactivities;
-    const cashFinancing = getLast(cashQuarter).totalcashfromfinancingactivities;
-
-    const daysOuts = (data1, data2, Q = true) => {
-      var daysOutsList = [];
-      let days = 90;
-      if (Q === false) {
-        days = 365;
-      }
-      if (data1 !== "undifined" || data2 !== "undifined") {
-        for (let i = 1; i < data1.length; i++) {
-          const daySales = Math.round(
-            data1[i].avgnetreceivable / (data2[i].totalrevenue / days)
-          );
-          const daysInv = Math.round(
-            (data1[i].avginventory / data2[i].costofrevenue) * days
-          );
-          const daysPay = Math.round(
-            data1[i].avgpayable / (data2[i].totalrevenue / days)
-          );
-          const ccc = daySales + daysInv - daysPay;
-
-          daysOutsList.push({
-            enddate: data1[i].enddate,
-            daysinvtouts: daysInv,
-            dayssalesouts: daySales,
-            dayspayouts: -daysPay,
-            ccc: ccc,
-          });
-        }
-      } else {
-        setTimeout(daysOuts, 250);
-      }
-
-      return daysOutsList;
-    };
-    const daysOutstandingQuarter = daysOuts(balanceQuarter, incomeQuarter);
-    const daysOutstandingYear = daysOuts(balanceYear, incomeYear, false);
-    const daySalesOutstanding = getLast(daysOutstandingQuarter).dayssalesouts;
-    const daysInventoryOutstanding = getLast(
-      daysOutstandingQuarter
-    ).daysinvtouts;
-
-    const daysPayablesOutstanding = getLast(daysOutstandingQuarter).dayspayouts;
-
-    setCashData({
-      lastCurrentRatio,
-      lastAcidRatio,
-      cashBalance,
-      cashOperations,
-      cashInvested,
-      cashFinancing,
-      ratiosQuarter,
-      balanceQuarter,
-      cashQuarter,
-      daySalesOutstanding,
-      daysInventoryOutstanding,
-      daysPayablesOutstanding,
-      daysOutstandingQuarter,
-    });
-
-    const histWorkingCapital = (data) => {
-      let histWork = [];
-      if (data !== "undefined") {
-        for (let i = 0; i < data.length; i++) {
-          const workingCapital =
-            data[i].totalcurrentassets - data[i].totalcurrentliabilities;
-          let obj = {
-            enddate: data[i].enddate,
-            workingcapital: workingCapital,
-          };
-          histWork.push(obj);
-        }
-        return histWork;
-      } else {
-        setTimeout(histWorkingCapital, 250);
-      }
-    };
-    const currentAssets = getLast(balanceQuarter).totalcurrentassets;
-    const cash = getLast(balanceQuarter).cash;
-    const accountsPayable = getLast(balanceQuarter).accountspayable;
-    const netReceivable = getLast(balanceQuarter).netreceivables;
-    const inventory = getLast(balanceQuarter).inventory;
-    const otherCurrentAssets = currentAssets - cash - netReceivable - inventory;
-    const currentLiab = getLast(balanceQuarter).totalcurrentliabilities;
-    const shortTermDebt = getLast(balanceQuarter).shortlongtermdebt;
-    const otherCurrentLiab = currentLiab - shortTermDebt - accountsPayable;
-    const workingCapital = currentAssets - currentLiab;
-    const historicalWorkingCapital = histWorkingCapital(balanceQuarter);
-
-    setKpiData({
-      currentAssets,
-      cash,
-      inventory,
-      netReceivable,
-      otherCurrentAssets,
-      accountsPayable,
-      shortTermDebt,
-      currentLiab,
-      otherCurrentLiab,
-      daysOutstandingYear,
-      workingCapital,
-      historicalWorkingCapital,
-    });
-
-    const lastIncomeQuarter = getLast(incomeQuarter);
-    const lastRatio = getLast(ratiosQuarter);
-    const lastOpex =
-      lastIncomeQuarter.totaloperatingexpenses / lastIncomeQuarter.totalrevenue;
-    setplData({
-      lastIncomeQuarter,
-      lastRatio,
-      lastOpex,
-      incomeQuarter,
-    });
-    const lastBalanceQuarter = getLast(balanceQuarter);
-    setFpData({
-      ratiosQuarter,
-      lastRatio,
-      balanceQuarter,
-      lastBalanceQuarter,
-      workingCapital,
-      historicalWorkingCapital,
-    });
-  }, [cashFlow, balance, ratios, income]);
-  function getQuarter(d) {
-    d = d || new Date(); // If no date supplied, use today
-    var q = [4, 1, 2, 3];
-    return q[Math.floor(d.getMonth() / 3)];
-  }
-  const getLast = (data) => {
-    if (data !== "undifined") {
-      if (!Array.isArray(data) || data.length === 0) {
-        return 0;
-      }
-      return data.reduce((a, b) => {
-        return new Date(a.enddate) > new Date(b.enddate) ? a : b;
-      });
-    } else {
-      setTimeout(getLast, 250);
+    const AMZN_cashflows = [{"id":1162,"investments":-22242000,"changetoliabilities":18745000,"totalcashflowsfrominvestingactivities":-59611000,"netborrowings":-1104000,"totalcashfromfinancingactivities":-1104000,"changetooperatingactivities":5754000,"netincome":21331000,"changeincash":5967000,"repurchaseofstock":0,"effectofexchangerate":618000,"totalcashfromoperatingactivities":66064000,"depreciation":25251000,"othercashflowsfrominvestingactivities":0,"changetoaccountreceivables":-8169000,"othercashflowsfromfinancingactivities":0,"changetonetincome":6001000,"capitalexpenditures":-40140000,"enddate":"2020-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-2849000,"ticker":"AMZN","simfinid":62747},{"id":1163,"investments":-9131000,"changetoliabilities":9904000,"totalcashflowsfrominvestingactivities":-24281000,"netborrowings":-10066000,"totalcashfromfinancingactivities":-10066000,"changetooperatingactivities":-1383000,"netincome":11588000,"changeincash":4237000,"repurchaseofstock":0,"effectofexchangerate":70000,"totalcashfromoperatingactivities":38514000,"depreciation":21789000,"othercashflowsfrominvestingactivities":0,"changetoaccountreceivables":-7681000,"othercashflowsfromfinancingactivities":0,"changetonetincome":7575000,"capitalexpenditures":-16861000,"enddate":"2019-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-3278000,"ticker":"AMZN","simfinid":62747},{"id":1164,"investments":1140000,"changetoliabilities":4414000,"totalcashflowsfrominvestingactivities":-12369000,"netborrowings":-7686000,"totalcashfromfinancingactivities":-7686000,"changetooperatingactivities":472000,"netincome":10073000,"changeincash":10317000,"repurchaseofstock":0,"effectofexchangerate":-351000,"totalcashfromoperatingactivities":30723000,"depreciation":15341000,"othercashflowsfrominvestingactivities":2104000,"changetoaccountreceivables":-4615000,"othercashflowsfromfinancingactivities":0,"changetonetincome":6352000,"capitalexpenditures":-13427000,"enddate":"2018-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-1314000,"ticker":"AMZN","simfinid":62747},{"id":1165,"investments":-3054000,"changetoliabilities":7838000,"totalcashflowsfrominvestingactivities":-27084000,"netborrowings":9928000,"totalcashfromfinancingactivities":9928000,"changetooperatingactivities":283000,"netincome":3033000,"changeincash":1922000,"repurchaseofstock":0,"effectofexchangerate":713000,"totalcashfromoperatingactivities":18365000,"depreciation":11478000,"othercashflowsfrominvestingactivities":1897000,"changetoaccountreceivables":-4780000,"othercashflowsfromfinancingactivities":0,"changetonetincome":4096000,"capitalexpenditures":-11955000,"enddate":"2017-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-3583000,"ticker":"AMZN","simfinid":62747},{"id":1166,"investments":577000,"changetoliabilities":4170000,"totalcashflowsfrominvestingactivities":-14828000,"netborrowings":-2776000,"totalcashfromfinancingactivities":-2776000,"changetooperatingactivities":-1465000,"netincome":3156000,"changeincash":-10490000,"repurchaseofstock":0,"effectofexchangerate":-199000,"totalcashfromoperatingactivities":7313000,"depreciation":8948000,"othercashflowsfrominvestingactivities":0,"changetoaccountreceivables":-4890000,"othercashflowsfromfinancingactivities":0,"changetonetincome":4453000,"capitalexpenditures":-15748000,"enddate":"2021-09-30 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-7059000,"ticker":"AMZN","simfinid":62747},{"id":1167,"investments":-8772000,"changetoliabilities":203000,"totalcashflowsfrominvestingactivities":-22080000,"netborrowings":15643000,"totalcashfromfinancingactivities":15643000,"changetooperatingactivities":-1685000,"netincome":7778000,"changeincash":6512000,"repurchaseofstock":0,"effectofexchangerate":234000,"totalcashfromoperatingactivities":12715000,"depreciation":8038000,"othercashflowsfrominvestingactivities":0,"changetoaccountreceivables":-4462000,"othercashflowsfromfinancingactivities":0,"changetonetincome":3052000,"capitalexpenditures":-14288000,"enddate":"2021-06-30 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-209000,"ticker":"AMZN","simfinid":62747},{"id":1168,"investments":3151000,"changetoliabilities":-7366000,"totalcashflowsfrominvestingactivities":-8666000,"netborrowings":-3476000,"totalcashfromfinancingactivities":-3476000,"changetooperatingactivities":-4060000,"netincome":8107000,"changeincash":-8222000,"repurchaseofstock":0,"effectofexchangerate":-293000,"totalcashfromoperatingactivities":4213000,"depreciation":7508000,"othercashflowsfrominvestingactivities":0,"changetoaccountreceivables":-2255000,"othercashflowsfromfinancingactivities":0,"changetonetincome":2583000,"capitalexpenditures":-12082000,"enddate":"2021-03-31 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":-304000,"ticker":"AMZN","simfinid":62747},{"id":1169,"investments":-3463000,"changetoliabilities":13582000,"totalcashflowsfrominvestingactivities":-17037000,"netborrowings":-1816000,"totalcashfromfinancingactivities":-1816000,"changetooperatingactivities":7129000,"netincome":7222000,"changeincash":12175000,"repurchaseofstock":0,"effectofexchangerate":597000,"totalcashfromoperatingactivities":30431000,"depreciation":7618000,"othercashflowsfrominvestingactivities":0,"changetoaccountreceivables":-4561000,"othercashflowsfromfinancingactivities":0,"changetonetincome":-888000,"capitalexpenditures":-14823000,"enddate":"2020-12-31 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":329000,"ticker":"AMZN","simfinid":62747}]
+    const AAPL_cashflows = [{"id":72,"investments":-2819000,"changetoliabilities":14002000,"totalcashflowsfrominvestingactivities":-14545000,"netborrowings":12665000,"totalcashfromfinancingactivities":-93353000,"changetooperatingactivities":-6146000,"netincome":94680000,"changeincash":-3860000,"repurchaseofstock":-92527000,"effectofexchangerate":0,"totalcashfromoperatingactivities":104038000,"depreciation":11284000,"othercashflowsfrominvestingactivities":-608000,"changetoaccountreceivables":-10125000,"othercashflowsfromfinancingactivities":-129000,"changetonetincome":2985000,"capitalexpenditures":-11085000,"enddate":"2021-09-25 00:00:00","period":"FY","issuanceofstock":1105000,"dividendspaid":-14467000,"changetoinventory":-2642000,"ticker":"AAPL","simfinid":111052},{"id":73,"investments":5335000,"changetoliabilities":-1981000,"totalcashflowsfrominvestingactivities":-4289000,"netborrowings":2499000,"totalcashfromfinancingactivities":-86820000,"changetooperatingactivities":881000,"netincome":57411000,"changeincash":-10435000,"repurchaseofstock":-75992000,"effectofexchangerate":0,"totalcashfromoperatingactivities":80674000,"depreciation":11056000,"othercashflowsfrominvestingactivities":-791000,"changetoaccountreceivables":6917000,"othercashflowsfromfinancingactivities":-126000,"changetonetincome":6517000,"capitalexpenditures":-7309000,"enddate":"2020-09-26 00:00:00","period":"FY","issuanceofstock":880000,"dividendspaid":-14081000,"changetoinventory":-127000,"ticker":"AAPL","simfinid":111052},{"id":74,"investments":58093000,"changetoliabilities":-2548000,"totalcashflowsfrominvestingactivities":45896000,"netborrowings":-7819000,"totalcashfromfinancingactivities":-90976000,"changetooperatingactivities":-896000,"netincome":55256000,"changeincash":24311000,"repurchaseofstock":-69714000,"effectofexchangerate":0,"totalcashfromoperatingactivities":69391000,"depreciation":12547000,"othercashflowsfrominvestingactivities":-1078000,"changetoaccountreceivables":245000,"othercashflowsfromfinancingactivities":-105000,"changetonetincome":5076000,"capitalexpenditures":-10495000,"enddate":"2019-09-28 00:00:00","period":"FY","issuanceofstock":781000,"dividendspaid":-14119000,"changetoinventory":-289000,"ticker":"AAPL","simfinid":111052},{"id":75,"investments":30845000,"changetoliabilities":9172000,"totalcashflowsfrominvestingactivities":16066000,"netborrowings":432000,"totalcashfromfinancingactivities":-87876000,"changetooperatingactivities":30016000,"netincome":59531000,"changeincash":5624000,"repurchaseofstock":-75265000,"effectofexchangerate":0,"totalcashfromoperatingactivities":77434000,"depreciation":10903000,"othercashflowsfrominvestingactivities":-745000,"changetoaccountreceivables":-5322000,"othercashflowsfromfinancingactivities":-105000,"changetonetincome":-27694000,"capitalexpenditures":-13313000,"enddate":"2018-09-29 00:00:00","period":"FY","issuanceofstock":669000,"dividendspaid":-13712000,"changetoinventory":828000,"ticker":"AAPL","simfinid":111052},{"id":76,"investments":4608000,"changetoliabilities":14050000,"totalcashflowsfrominvestingactivities":835000,"netborrowings":3220000,"totalcashfromfinancingactivities":-20382000,"changetooperatingactivities":-5602000,"netincome":20551000,"changeincash":653000,"repurchaseofstock":-20449000,"effectofexchangerate":0,"totalcashfromoperatingactivities":20200000,"depreciation":2989000,"othercashflowsfrominvestingactivities":-530000,"changetoaccountreceivables":-8809000,"othercashflowsfromfinancingactivities":-57000,"changetonetincome":-1550000,"capitalexpenditures":-3223000,"enddate":"2021-09-25 00:00:00","period":"Q","issuanceofstock":544000,"dividendspaid":-3640000,"changetoinventory":-1429000,"ticker":"AAPL","simfinid":111052},{"id":77,"investments":5747000,"changetoliabilities":307000,"totalcashflowsfrominvestingactivities":3572000,"netborrowings":3220000,"totalcashfromfinancingactivities":-29396000,"changetooperatingactivities":-6048000,"netincome":21744000,"changeincash":-4730000,"repurchaseofstock":-25595000,"effectofexchangerate":0,"totalcashfromoperatingactivities":21094000,"depreciation":2832000,"othercashflowsfrominvestingactivities":-78000,"changetoaccountreceivables":1031000,"othercashflowsfromfinancingactivities":-34000,"changetonetincome":1215000,"capitalexpenditures":-2093000,"enddate":"2021-06-26 00:00:00","period":"Q","issuanceofstock":544000,"dividendspaid":-3767000,"changetoinventory":13000,"ticker":"AAPL","simfinid":111052},{"id":78,"investments":-7895000,"changetoliabilities":-23366000,"totalcashflowsfrominvestingactivities":-10368000,"netborrowings":10423000,"totalcashfromfinancingactivities":-11326000,"changetooperatingactivities":11265000,"netincome":23630000,"changeincash":2287000,"repurchaseofstock":-18847000,"effectofexchangerate":0,"totalcashfromoperatingactivities":23981000,"depreciation":2797000,"othercashflowsfrominvestingactivities":-204000,"changetoaccountreceivables":8598000,"othercashflowsfromfinancingactivities":-16000,"changetonetincome":1333000,"capitalexpenditures":-2269000,"enddate":"2021-03-27 00:00:00","period":"Q","issuanceofstock":561000,"dividendspaid":-3447000,"changetoinventory":-276000,"ticker":"AAPL","simfinid":111052},{"id":79,"investments":-5279000,"changetoliabilities":23011000,"totalcashflowsfrominvestingactivities":-8584000,"netborrowings":-978000,"totalcashfromfinancingactivities":-32249000,"changetooperatingactivities":-5761000,"netincome":28755000,"changeincash":-2070000,"repurchaseofstock":-27636000,"effectofexchangerate":0,"totalcashfromoperatingactivities":38763000,"depreciation":2666000,"othercashflowsfrominvestingactivities":204000,"changetoaccountreceivables":-10945000,"othercashflowsfromfinancingactivities":-22000,"changetonetincome":1987000,"capitalexpenditures":-3500000,"enddate":"2020-12-26 00:00:00","period":"Q","issuanceofstock":561000,"dividendspaid":-3613000,"changetoinventory":-950000,"ticker":"AAPL","simfinid":111052}]
+    const META_cashflows = [{"id":5976,"investments":-14520000,"changetoliabilities":91000,"totalcashflowsfrominvestingactivities":-30059000,"netborrowings":-580000,"totalcashfromfinancingactivities":-10292000,"changetooperatingactivities":-1302000,"netincome":29146000,"changeincash":-1325000,"repurchaseofstock":-9836000,"effectofexchangerate":279000,"totalcashfromoperatingactivities":38747000,"depreciation":6862000,"othercashflowsfrominvestingactivities":-36000,"changetoaccountreceivables":-1512000,"othercashflowsfromfinancingactivities":124000,"changetonetincome":5462000,"capitalexpenditures":-15115000,"enddate":"2020-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5977,"investments":-4254000,"changetoliabilities":236000,"totalcashflowsfrominvestingactivities":-19864000,"netborrowings":-775000,"totalcashfromfinancingactivities":-7299000,"changetooperatingactivities":8975000,"netincome":18485000,"changeincash":9155000,"repurchaseofstock":-6539000,"effectofexchangerate":4000,"totalcashfromoperatingactivities":36314000,"depreciation":5741000,"othercashflowsfrominvestingactivities":-36000,"changetoaccountreceivables":-1961000,"othercashflowsfromfinancingactivities":15000,"changetonetincome":4838000,"capitalexpenditures":-15102000,"enddate":"2019-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5978,"investments":2449000,"changetoliabilities":274000,"totalcashflowsfrominvestingactivities":-11603000,"netborrowings":500000,"totalcashfromfinancingactivities":-15572000,"changetooperatingactivities":91000,"netincome":22112000,"changeincash":1920000,"repurchaseofstock":-16087000,"effectofexchangerate":-179000,"totalcashfromoperatingactivities":29274000,"depreciation":4315000,"othercashflowsfrominvestingactivities":-36000,"changetoaccountreceivables":-1892000,"othercashflowsfromfinancingactivities":15000,"changetonetincome":4374000,"capitalexpenditures":-13915000,"enddate":"2018-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5979,"investments":-13250000,"changetoliabilities":47000,"totalcashflowsfrominvestingactivities":-20118000,"netborrowings":500000,"totalcashfromfinancingactivities":-5235000,"changetooperatingactivities":3449000,"netincome":15934000,"changeincash":-905000,"repurchaseofstock":-5222000,"effectofexchangerate":232000,"totalcashfromoperatingactivities":24216000,"depreciation":3025000,"othercashflowsfrominvestingactivities":-13000,"changetoaccountreceivables":-1609000,"othercashflowsfromfinancingactivities":-13000,"changetonetincome":3370000,"capitalexpenditures":-6733000,"enddate":"2017-12-31 00:00:00","period":"FY","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5980,"investments":4153000,"changetoliabilities":772000,"totalcashflowsfrominvestingactivities":-330000,"netborrowings":-219000,"totalcashfromfinancingactivities":-15252000,"changetooperatingactivities":1166000,"netincome":9194000,"changeincash":-1707000,"repurchaseofstock":-15033000,"effectofexchangerate":-215000,"totalcashfromoperatingactivities":14090000,"depreciation":1995000,"othercashflowsfrominvestingactivities":-98000,"changetoaccountreceivables":-555000,"othercashflowsfromfinancingactivities":0,"changetonetincome":1519000,"capitalexpenditures":-4314000,"enddate":"2021-09-30 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5981,"investments":-3264000,"changetoliabilities":119000,"totalcashflowsfrominvestingactivities":-8195000,"netborrowings":-70000,"totalcashfromfinancingactivities":-8549000,"changetooperatingactivities":-643000,"netincome":10394000,"changeincash":-3380000,"repurchaseofstock":-8434000,"effectofexchangerate":117000,"totalcashfromoperatingactivities":13247000,"depreciation":1986000,"othercashflowsfrominvestingactivities":-60000,"changetoaccountreceivables":-1366000,"othercashflowsfromfinancingactivities":-45000,"changetonetincome":2756000,"capitalexpenditures":-4612000,"enddate":"2021-06-30 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5982,"investments":-600000,"changetoliabilities":-244000,"totalcashflowsfrominvestingactivities":-4874000,"netborrowings":-201000,"totalcashfromfinancingactivities":-5185000,"changetooperatingactivities":-2014000,"netincome":9497000,"changeincash":1937000,"repurchaseofstock":-5016000,"effectofexchangerate":-246000,"totalcashfromoperatingactivities":12242000,"depreciation":1972000,"othercashflowsfrominvestingactivities":-2000,"changetoaccountreceivables":849000,"othercashflowsfromfinancingactivities":32000,"changetonetincome":2182000,"capitalexpenditures":-4272000,"enddate":"2021-03-31 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021},{"id":5983,"investments":-529000,"changetoliabilities":-59000,"totalcashflowsfrominvestingactivities":-5173000,"netborrowings":-158000,"totalcashfromfinancingactivities":-3207000,"changetooperatingactivities":2606000,"netincome":11219000,"changeincash":5975000,"repurchaseofstock":-3049000,"effectofexchangerate":315000,"totalcashfromoperatingactivities":14040000,"depreciation":1863000,"othercashflowsfrominvestingactivities":-27000,"changetoaccountreceivables":-3059000,"othercashflowsfromfinancingactivities":32000,"changetonetincome":1470000,"capitalexpenditures":-4613000,"enddate":"2020-12-31 00:00:00","period":"Q","issuanceofstock":0,"dividendspaid":0,"changetoinventory":0,"ticker":"FB","simfinid":121021}]
+    const AMZN_balances = [{"id":1162,"intangibleassets":4981000,"totalliab":227791000,"totalstockholderequity":93404000,"othercurrentliab":15267000,"totalassets":321195000,"commonstock":5000,"othercurrentassets":233000,"retainedearnings":52551000,"otherliab":17017000,"goodwill":15017000,"treasurystock":-2017000,"otherassets":12097000,"cash":42122000,"totalcurrentliabilities":126385000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1155000,"otherstockholderequity":-180000,"propertyplantequipment":150667000,"totalcurrentassets":132733000,"longterminvestments":5700000,"nettangibleassets":73406000,"shortterminvestments":"42274000","netreceivables":24309000,"longtermdebt":31816000,"inventory":23795000,"accountspayable":72539000,"enddate":"2020-12-31 00:00:00","period":"FY","capitalsurplus":42865000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1163,"intangibleassets":4049000,"totalliab":163188000,"totalstockholderequity":62060000,"othercurrentliab":12202000,"totalassets":225248000,"commonstock":5000,"othercurrentassets":276000,"retainedearnings":31220000,"otherliab":12171000,"goodwill":14754000,"treasurystock":-2823000,"otherassets":10096000,"cash":36092000,"totalcurrentliabilities":87812000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1305000,"otherstockholderequity":-986000,"propertyplantequipment":97846000,"totalcurrentassets":96334000,"longterminvestments":2169000,"nettangibleassets":43257000,"shortterminvestments":"18929000","netreceivables":20540000,"longtermdebt":23414000,"inventory":20497000,"accountspayable":47183000,"enddate":"2019-12-31 00:00:00","period":"FY","capitalsurplus":33658000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1164,"intangibleassets":4110000,"totalliab":119099000,"totalstockholderequity":43549000,"othercurrentliab":9959000,"totalassets":162648000,"commonstock":5000,"othercurrentassets":418000,"retainedearnings":19625000,"otherliab":17563000,"goodwill":14548000,"treasurystock":-2872000,"otherassets":6370000,"cash":31750000,"totalcurrentliabilities":68391000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1371000,"otherstockholderequity":-1035000,"propertyplantequipment":61797000,"totalcurrentassets":75101000,"longterminvestments":722000,"nettangibleassets":24891000,"shortterminvestments":"9500000","netreceivables":16259000,"longtermdebt":23495000,"inventory":17174000,"accountspayable":38192000,"enddate":"2018-12-31 00:00:00","period":"FY","capitalsurplus":26791000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1165,"intangibleassets":3371000,"totalliab":103601000,"totalstockholderequity":27709000,"othercurrentliab":8565000,"totalassets":131310000,"commonstock":5000,"othercurrentassets":1329000,"retainedearnings":8636000,"otherliab":7792000,"goodwill":13350000,"treasurystock":-2321000,"otherassets":5085000,"cash":20522000,"totalcurrentliabilities":57883000,"deferredlongtermassetcharges":0,"shortlongtermdebt":100000,"otherstockholderequity":-484000,"propertyplantequipment":48866000,"totalcurrentassets":60197000,"longterminvestments":441000,"nettangibleassets":10988000,"shortterminvestments":"10464000","netreceivables":11835000,"longtermdebt":24743000,"inventory":16047000,"accountspayable":34616000,"enddate":"2017-12-31 00:00:00","period":"FY","capitalsurplus":21389000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1166,"intangibleassets":0,"totalliab":261842000,"totalstockholderequity":120564000,"othercurrentliab":10974000,"totalassets":382406000,"commonstock":5000,"othercurrentassets":218000,"retainedearnings":71592000,"otherliab":18145000,"goodwill":15345000,"treasurystock":-2912000,"otherassets":22027000,"cash":29944000,"totalcurrentliabilities":123994000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1185000,"otherstockholderequity":-1075000,"propertyplantequipment":199303000,"totalcurrentassets":138531000,"longterminvestments":7200000,"nettangibleassets":105219000,"shortterminvestments":"49044000","netreceivables":28392000,"longtermdebt":55855000,"inventory":30933000,"accountspayable":71474000,"enddate":"2021-09-30 00:00:00","period":"Q","capitalsurplus":51879000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1167,"intangibleassets":0,"totalliab":245516000,"totalstockholderequity":114803000,"othercurrentliab":10695000,"totalassets":360319000,"commonstock":5000,"othercurrentassets":265000,"retainedearnings":68436000,"otherliab":21148000,"goodwill":15350000,"treasurystock":-2362000,"otherassets":19973000,"cash":40380000,"totalcurrentliabilities":117792000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1290000,"otherstockholderequity":-525000,"propertyplantequipment":176848000,"totalcurrentassets":140848000,"longterminvestments":7300000,"nettangibleassets":99453000,"shortterminvestments":"49514000","netreceivables":26570000,"longtermdebt":50279000,"inventory":24119000,"accountspayable":66090000,"enddate":"2021-06-30 00:00:00","period":"Q","capitalsurplus":48724000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1168,"intangibleassets":0,"totalliab":219757000,"totalstockholderequity":103320000,"othercurrentliab":10539000,"totalassets":323077000,"commonstock":5000,"othercurrentassets":299000,"retainedearnings":60658000,"otherliab":19418000,"goodwill":15220000,"treasurystock":-2503000,"otherassets":18560000,"cash":33834000,"totalcurrentliabilities":115404000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1156000,"otherstockholderequity":-666000,"propertyplantequipment":160789000,"totalcurrentassets":121408000,"longterminvestments":7100000,"nettangibleassets":88100000,"shortterminvestments":"39436000","netreceivables":23990000,"longtermdebt":31868000,"inventory":23849000,"accountspayable":63926000,"enddate":"2021-03-31 00:00:00","period":"Q","capitalsurplus":45160000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747},{"id":1169,"intangibleassets":4981000,"totalliab":227791000,"totalstockholderequity":93404000,"othercurrentliab":15267000,"totalassets":321195000,"commonstock":5000,"othercurrentassets":233000,"retainedearnings":52551000,"otherliab":17017000,"goodwill":15017000,"treasurystock":-2017000,"otherassets":12097000,"cash":42122000,"totalcurrentliabilities":126385000,"deferredlongtermassetcharges":0,"shortlongtermdebt":1155000,"otherstockholderequity":-180000,"propertyplantequipment":150667000,"totalcurrentassets":132733000,"longterminvestments":5700000,"nettangibleassets":73406000,"shortterminvestments":"42274000","netreceivables":24309000,"longtermdebt":31816000,"inventory":23795000,"accountspayable":72539000,"enddate":"2020-12-31 00:00:00","period":"Q","capitalsurplus":42865000,"minorityinterest":0,"ticker":"AMZN","simfinid":62747}]
+    const AAPL_balances = [{"id":72,"intangibleassets":0,"totalliab":287912000,"totalstockholderequity":63090000,"othercurrentliab":53577000,"totalassets":351002000,"commonstock":57365000,"othercurrentassets":14111000,"retainedearnings":5562000,"otherliab":43050000,"goodwill":0,"treasurystock":163000,"otherassets":38762000,"cash":34940000,"totalcurrentliabilities":125481000,"deferredlongtermassetcharges":0,"shortlongtermdebt":9613000,"otherstockholderequity":163000,"propertyplantequipment":49527000,"totalcurrentassets":134836000,"longterminvestments":127877000,"nettangibleassets":63090000,"shortterminvestments":"27699000","netreceivables":51506000,"longtermdebt":109106000,"inventory":6580000,"accountspayable":54763000,"enddate":"2021-09-25 00:00:00","period":"FY","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":73,"intangibleassets":0,"totalliab":258549000,"totalstockholderequity":65339000,"othercurrentliab":47867000,"totalassets":323888000,"commonstock":50779000,"othercurrentassets":11264000,"retainedearnings":14966000,"otherliab":46108000,"goodwill":0,"treasurystock":-406000,"otherassets":33952000,"cash":38016000,"totalcurrentliabilities":105392000,"deferredlongtermassetcharges":0,"shortlongtermdebt":8773000,"otherstockholderequity":-406000,"propertyplantequipment":45336000,"totalcurrentassets":143713000,"longterminvestments":100887000,"nettangibleassets":65339000,"shortterminvestments":"52927000","netreceivables":37445000,"longtermdebt":98667000,"inventory":4061000,"accountspayable":42296000,"enddate":"2020-09-26 00:00:00","period":"FY","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":74,"intangibleassets":0,"totalliab":248028000,"totalstockholderequity":90488000,"othercurrentliab":43242000,"totalassets":338516000,"commonstock":45174000,"othercurrentassets":12352000,"retainedearnings":45898000,"otherliab":50503000,"goodwill":0,"treasurystock":-584000,"otherassets":32978000,"cash":48844000,"totalcurrentliabilities":105718000,"deferredlongtermassetcharges":0,"shortlongtermdebt":10260000,"otherstockholderequity":-584000,"propertyplantequipment":37378000,"totalcurrentassets":162819000,"longterminvestments":105341000,"nettangibleassets":90488000,"shortterminvestments":"51713000","netreceivables":45804000,"longtermdebt":91807000,"inventory":4106000,"accountspayable":46236000,"enddate":"2019-09-28 00:00:00","period":"FY","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":75,"intangibleassets":0,"totalliab":258578000,"totalstockholderequity":107147000,"othercurrentliab":39293000,"totalassets":365725000,"commonstock":40201000,"othercurrentassets":12087000,"retainedearnings":70400000,"otherliab":48914000,"goodwill":0,"treasurystock":-3454000,"otherassets":22283000,"cash":25913000,"totalcurrentliabilities":115929000,"deferredlongtermassetcharges":0,"shortlongtermdebt":8784000,"otherstockholderequity":-3454000,"propertyplantequipment":41304000,"totalcurrentassets":131339000,"longterminvestments":170799000,"nettangibleassets":107147000,"shortterminvestments":"40388000","netreceivables":48995000,"longtermdebt":93735000,"inventory":3956000,"accountspayable":55888000,"enddate":"2018-09-29 00:00:00","period":"FY","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":76,"intangibleassets":0,"totalliab":287912000,"totalstockholderequity":63090000,"othercurrentliab":53577000,"totalassets":351002000,"commonstock":57365000,"othercurrentassets":14111000,"retainedearnings":5562000,"otherliab":43050000,"goodwill":0,"treasurystock":163000,"otherassets":38762000,"cash":34940000,"totalcurrentliabilities":125481000,"deferredlongtermassetcharges":0,"shortlongtermdebt":9613000,"otherstockholderequity":163000,"propertyplantequipment":49527000,"totalcurrentassets":134836000,"longterminvestments":127877000,"nettangibleassets":63090000,"shortterminvestments":"27699000","netreceivables":51506000,"longtermdebt":109106000,"inventory":6580000,"accountspayable":54763000,"enddate":"2021-09-25 00:00:00","period":"Q","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":77,"intangibleassets":0,"totalliab":265560000,"totalstockholderequity":64280000,"othercurrentliab":51306000,"totalassets":329840000,"commonstock":54989000,"othercurrentassets":13641000,"retainedearnings":9233000,"otherliab":38354000,"goodwill":0,"treasurystock":58000,"otherassets":44854000,"cash":34050000,"totalcurrentliabilities":107754000,"deferredlongtermassetcharges":0,"shortlongtermdebt":8039000,"otherstockholderequity":58000,"propertyplantequipment":38615000,"totalcurrentassets":114423000,"longterminvestments":131948000,"nettangibleassets":64280000,"shortterminvestments":"27646000","netreceivables":33908000,"longtermdebt":105752000,"inventory":5178000,"accountspayable":40409000,"enddate":"2021-06-26 00:00:00","period":"Q","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":78,"intangibleassets":0,"totalliab":267980000,"totalstockholderequity":69178000,"othercurrentliab":53255000,"totalassets":337158000,"commonstock":54203000,"othercurrentassets":13376000,"retainedearnings":15261000,"otherliab":39853000,"goodwill":0,"treasurystock":-286000,"otherassets":43339000,"cash":38466000,"totalcurrentliabilities":106385000,"deferredlongtermassetcharges":0,"shortlongtermdebt":8003000,"otherstockholderequity":-286000,"propertyplantequipment":37815000,"totalcurrentassets":121465000,"longterminvestments":134539000,"nettangibleassets":69178000,"shortterminvestments":"31368000","netreceivables":33036000,"longtermdebt":108642000,"inventory":5219000,"accountspayable":40127000,"enddate":"2021-03-27 00:00:00","period":"Q","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052},{"id":79,"intangibleassets":0,"totalliab":287830000,"totalstockholderequity":66224000,"othercurrentliab":55899000,"totalassets":354054000,"commonstock":51744000,"othercurrentassets":13687000,"retainedearnings":14301000,"otherliab":43042000,"goodwill":0,"treasurystock":179000,"otherassets":43270000,"cash":36010000,"totalcurrentliabilities":132507000,"deferredlongtermassetcharges":0,"shortlongtermdebt":7762000,"otherstockholderequity":179000,"propertyplantequipment":37933000,"totalcurrentassets":154106000,"longterminvestments":118745000,"nettangibleassets":66224000,"shortterminvestments":"40816000","netreceivables":58620000,"longtermdebt":99281000,"inventory":4973000,"accountspayable":63846000,"enddate":"2020-12-26 00:00:00","period":"Q","capitalsurplus":0,"minorityinterest":0,"ticker":"AAPL","simfinid":111052}]
+    const META_balances = [{"id":5976,"intangibleassets":623000,"totalliab":31026000,"totalstockholderequity":128290000,"othercurrentliab":9964000,"totalassets":159316000,"commonstock":0,"othercurrentassets":241000,"retainedearnings":77345000,"otherliab":5945000,"goodwill":19050000,"treasurystock":927000,"otherassets":2758000,"cash":17576000,"totalcurrentliabilities":14981000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":927000,"propertyplantequipment":54981000,"totalcurrentassets":75670000,"longterminvestments":6234000,"nettangibleassets":108617000,"shortterminvestments":"44378000","netreceivables":11335000,"longtermdebt":0,"inventory":0,"accountspayable":1331000,"enddate":"2020-12-31 00:00:00","period":"FY","capitalsurplus":50018000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5977,"intangibleassets":894000,"totalliab":32322000,"totalstockholderequity":101054000,"othercurrentliab":11186000,"totalassets":133376000,"commonstock":0,"othercurrentassets":8000,"retainedearnings":55692000,"otherliab":7745000,"goodwill":18715000,"treasurystock":-489000,"otherassets":2673000,"cash":19079000,"totalcurrentliabilities":15053000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":-489000,"propertyplantequipment":44783000,"totalcurrentassets":66225000,"longterminvestments":86000,"nettangibleassets":81445000,"shortterminvestments":"35776000","netreceivables":9518000,"longtermdebt":0,"inventory":0,"accountspayable":1363000,"enddate":"2019-12-31 00:00:00","period":"FY","capitalsurplus":45851000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5978,"intangibleassets":1294000,"totalliab":13207000,"totalstockholderequity":84127000,"othercurrentliab":4494000,"totalassets":97334000,"commonstock":42906000,"othercurrentassets":10000,"retainedearnings":41981000,"otherliab":6190000,"goodwill":18301000,"treasurystock":-760000,"otherassets":2576000,"cash":10019000,"totalcurrentliabilities":7017000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":-760000,"propertyplantequipment":24683000,"totalcurrentassets":50480000,"longterminvestments":0,"nettangibleassets":64532000,"shortterminvestments":"31095000","netreceivables":7587000,"longtermdebt":0,"inventory":0,"accountspayable":820000,"enddate":"2018-12-31 00:00:00","period":"FY","capitalsurplus":42906000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5979,"intangibleassets":1884000,"totalliab":10177000,"totalstockholderequity":74347000,"othercurrentliab":2590000,"totalassets":84524000,"commonstock":0,"othercurrentassets":18000,"retainedearnings":33990000,"otherliab":6417000,"goodwill":18221000,"treasurystock":-227000,"otherassets":2135000,"cash":8079000,"totalcurrentliabilities":3760000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":-227000,"propertyplantequipment":13721000,"totalcurrentassets":48563000,"longterminvestments":0,"nettangibleassets":54242000,"shortterminvestments":"33632000","netreceivables":5832000,"longtermdebt":0,"inventory":0,"accountspayable":380000,"enddate":"2017-12-31 00:00:00","period":"FY","capitalsurplus":40584000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5980,"intangibleassets":365000,"totalliab":36225000,"totalstockholderequity":133360000,"othercurrentliab":1373000,"totalassets":169585000,"commonstock":0,"othercurrentassets":195000,"retainedearnings":79233000,"otherliab":6352000,"goodwill":19065000,"treasurystock":-207000,"otherassets":3187000,"cash":14496000,"totalcurrentliabilities":17812000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":-207000,"propertyplantequipment":64789000,"totalcurrentassets":75421000,"longterminvestments":6758000,"nettangibleassets":113930000,"shortterminvestments":"43579000","netreceivables":12088000,"longtermdebt":0,"inventory":0,"accountspayable":2195000,"enddate":"2021-09-30 00:00:00","period":"Q","capitalsurplus":54334000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5981,"intangibleassets":514000,"totalliab":32382000,"totalstockholderequity":138227000,"othercurrentliab":1340000,"totalassets":170609000,"commonstock":0,"othercurrentassets":201000,"retainedearnings":85097000,"otherliab":6059000,"goodwill":19219000,"treasurystock":285000,"otherassets":2352000,"cash":16186000,"totalcurrentliabilities":14874000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":285000,"propertyplantequipment":61434000,"totalcurrentassets":80697000,"longterminvestments":6393000,"nettangibleassets":118494000,"shortterminvestments":"47894000","netreceivables":11698000,"longtermdebt":0,"inventory":0,"accountspayable":973000,"enddate":"2021-06-30 00:00:00","period":"Q","capitalsurplus":52845000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5982,"intangibleassets":505000,"totalliab":29866000,"totalstockholderequity":133657000,"othercurrentliab":1388000,"totalassets":163523000,"commonstock":0,"othercurrentassets":257000,"retainedearnings":82343000,"otherliab":6101000,"goodwill":19056000,"treasurystock":154000,"otherassets":2376000,"cash":19513000,"totalcurrentliabilities":12717000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":154000,"propertyplantequipment":57922000,"totalcurrentassets":77322000,"longterminvestments":6342000,"nettangibleassets":114096000,"shortterminvestments":"44706000","netreceivables":10276000,"longtermdebt":0,"inventory":0,"accountspayable":878000,"enddate":"2021-03-31 00:00:00","period":"Q","capitalsurplus":51160000,"minorityinterest":0,"ticker":"FB","simfinid":121021},{"id":5983,"intangibleassets":623000,"totalliab":31026000,"totalstockholderequity":128290000,"othercurrentliab":9964000,"totalassets":159316000,"commonstock":0,"othercurrentassets":241000,"retainedearnings":77345000,"otherliab":5945000,"goodwill":19050000,"treasurystock":927000,"otherassets":2758000,"cash":17576000,"totalcurrentliabilities":14981000,"deferredlongtermassetcharges":0,"shortlongtermdebt":0,"otherstockholderequity":927000,"propertyplantequipment":54981000,"totalcurrentassets":75670000,"longterminvestments":6234000,"nettangibleassets":108617000,"shortterminvestments":"44378000","netreceivables":11335000,"longtermdebt":0,"inventory":0,"accountspayable":1331000,"enddate":"2020-12-31 00:00:00","period":"Q","capitalsurplus":50018000,"minorityinterest":0,"ticker":"FB","simfinid":121021}]
+    const AMZN_indicators = [{"id":1216,"ticker":"AMZN","enddate":"2020-12-31 00:00:00","period":"FY","grossmargin":0.4,"operativemargin":0.06,"netmargin":0.06,"returnonassets":0.07,"returnonequity":0.23,"externalmoneyratio":0.71,"interestcoverage":13.9,"totalcapitalizationratio":0.39,"currentratio":1.05,"acidratio":0.86,"simfinid":62747},{"id":1217,"ticker":"AMZN","enddate":"2019-12-31 00:00:00","period":"FY","grossmargin":0.41,"operativemargin":0.05,"netmargin":0.04,"returnonassets":0.05,"returnonequity":0.19,"externalmoneyratio":0.72,"interestcoverage":9.0,"totalcapitalizationratio":0.38,"currentratio":1.1,"acidratio":0.86,"simfinid":62747},{"id":1218,"ticker":"AMZN","enddate":"2018-12-31 00:00:00","period":"FY","grossmargin":0.4,"operativemargin":0.05,"netmargin":0.04,"returnonassets":0.06,"returnonequity":0.23,"externalmoneyratio":0.73,"interestcoverage":8.77,"totalcapitalizationratio":0.41,"currentratio":1.1,"acidratio":0.85,"simfinid":62747},{"id":1219,"ticker":"AMZN","enddate":"2017-12-31 00:00:00","period":"FY","grossmargin":0.37,"operativemargin":0.02,"netmargin":0.02,"returnonassets":0.02,"returnonequity":0.11,"externalmoneyratio":0.79,"interestcoverage":4.84,"totalcapitalizationratio":0.4,"currentratio":1.04,"acidratio":0.76,"simfinid":62747},{"id":1220,"ticker":"AMZN","enddate":"2021-09-30 00:00:00","period":"Q","grossmargin":0.43,"operativemargin":0.04,"netmargin":0.03,"returnonassets":0.01,"returnonequity":0.03,"externalmoneyratio":0.68,"interestcoverage":9.84,"totalcapitalizationratio":0.46,"currentratio":1.12,"acidratio":0.87,"simfinid":62747},{"id":1221,"ticker":"AMZN","enddate":"2021-06-30 00:00:00","period":"Q","grossmargin":0.43,"operativemargin":0.07,"netmargin":0.07,"returnonassets":0.02,"returnonequity":0.07,"externalmoneyratio":0.68,"interestcoverage":17.71,"totalcapitalizationratio":0.46,"currentratio":1.2,"acidratio":0.99,"simfinid":62747},{"id":1222,"ticker":"AMZN","enddate":"2021-03-31 00:00:00","period":"Q","grossmargin":0.42,"operativemargin":0.08,"netmargin":0.07,"returnonassets":0.03,"returnonequity":0.08,"externalmoneyratio":0.68,"interestcoverage":22.22,"totalcapitalizationratio":0.42,"currentratio":1.05,"acidratio":0.85,"simfinid":62747},{"id":1223,"ticker":"AMZN","enddate":"2020-12-31 00:00:00","period":"Q","grossmargin":0.37,"operativemargin":0.05,"netmargin":0.06,"returnonassets":0.02,"returnonequity":0.08,"externalmoneyratio":0.71,"interestcoverage":16.6,"totalcapitalizationratio":0.39,"currentratio":1.05,"acidratio":0.86,"simfinid":62747}]
+    const AAPL_indicators = [{"id":144,"ticker":"AAPL","enddate":"2021-09-25 00:00:00","period":"FY","grossmargin":0.42,"operativemargin":0.3,"netmargin":0.26,"returnonassets":0.27,"returnonequity":1.5,"externalmoneyratio":0.82,"interestcoverage":41.19,"totalcapitalizationratio":0.49,"currentratio":1.07,"acidratio":1.02,"simfinid":111052},{"id":145,"ticker":"AAPL","enddate":"2020-09-26 00:00:00","period":"FY","grossmargin":0.38,"operativemargin":0.24,"netmargin":0.21,"returnonassets":0.18,"returnonequity":0.88,"externalmoneyratio":0.8,"interestcoverage":23.07,"totalcapitalizationratio":0.51,"currentratio":1.36,"acidratio":1.33,"simfinid":111052},{"id":146,"ticker":"AAPL","enddate":"2019-09-28 00:00:00","period":"FY","grossmargin":0.38,"operativemargin":0.25,"netmargin":0.21,"returnonassets":0.16,"returnonequity":0.61,"externalmoneyratio":0.73,"interestcoverage":17.88,"totalcapitalizationratio":0.54,"currentratio":1.54,"acidratio":1.5,"simfinid":111052},{"id":147,"ticker":"AAPL","enddate":"2018-09-29 00:00:00","period":"FY","grossmargin":0.38,"operativemargin":0.27,"netmargin":0.22,"returnonassets":0.16,"returnonequity":0.56,"externalmoneyratio":0.71,"interestcoverage":21.88,"totalcapitalizationratio":0.55,"currentratio":1.13,"acidratio":1.1,"simfinid":111052},{"id":148,"ticker":"AAPL","enddate":"2021-09-25 00:00:00","period":"Q","grossmargin":0.42,"operativemargin":0.29,"netmargin":0.25,"returnonassets":0.06,"returnonequity":0.33,"externalmoneyratio":0.82,"interestcoverage":35.4,"totalcapitalizationratio":0.49,"currentratio":1.07,"acidratio":1.02,"simfinid":111052},{"id":149,"ticker":"AAPL","enddate":"2021-06-26 00:00:00","period":"Q","grossmargin":0.43,"operativemargin":0.3,"netmargin":0.27,"returnonassets":0.07,"returnonequity":0.34,"externalmoneyratio":0.81,"interestcoverage":36.28,"totalcapitalizationratio":0.52,"currentratio":1.06,"acidratio":1.01,"simfinid":111052},{"id":150,"ticker":"AAPL","enddate":"2021-03-27 00:00:00","period":"Q","grossmargin":0.43,"operativemargin":0.31,"netmargin":0.26,"returnonassets":0.07,"returnonequity":0.34,"externalmoneyratio":0.79,"interestcoverage":41.05,"totalcapitalizationratio":0.53,"currentratio":1.14,"acidratio":1.09,"simfinid":111052},{"id":151,"ticker":"AAPL","enddate":"2020-12-26 00:00:00","period":"Q","grossmargin":0.4,"operativemargin":0.3,"netmargin":0.26,"returnonassets":0.08,"returnonequity":0.43,"externalmoneyratio":0.81,"interestcoverage":52.56,"totalcapitalizationratio":0.47,"currentratio":1.16,"acidratio":1.13,"simfinid":111052}]
+    const META_indicators = [{"id":5940,"ticker":"FB","enddate":"2020-12-31 00:00:00","period":"FY","grossmargin":0.81,"operativemargin":0.38,"netmargin":0.34,"returnonassets":0.18,"returnonequity":0.23,"externalmoneyratio":0.19,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":5.05,"acidratio":null,"simfinid":121021},{"id":5941,"ticker":"FB","enddate":"2019-12-31 00:00:00","period":"FY","grossmargin":0.82,"operativemargin":0.41,"netmargin":0.26,"returnonassets":0.14,"returnonequity":0.18,"externalmoneyratio":0.24,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":4.4,"acidratio":null,"simfinid":121021},{"id":5942,"ticker":"FB","enddate":"2018-12-31 00:00:00","period":"FY","grossmargin":0.83,"operativemargin":0.45,"netmargin":0.4,"returnonassets":0.23,"returnonequity":0.26,"externalmoneyratio":0.14,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":7.19,"acidratio":null,"simfinid":121021},{"id":5943,"ticker":"FB","enddate":"2017-12-31 00:00:00","period":"FY","grossmargin":0.87,"operativemargin":0.5,"netmargin":0.39,"returnonassets":0.19,"returnonequity":0.21,"externalmoneyratio":0.12,"interestcoverage":3367.17,"totalcapitalizationratio":null,"currentratio":12.92,"acidratio":null,"simfinid":121021},{"id":5944,"ticker":"FB","enddate":"2021-09-30 00:00:00","period":"Q","grossmargin":0.8,"operativemargin":0.36,"netmargin":0.32,"returnonassets":0.05,"returnonequity":0.07,"externalmoneyratio":0.21,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":4.23,"acidratio":null,"simfinid":121021},{"id":5945,"ticker":"FB","enddate":"2021-06-30 00:00:00","period":"Q","grossmargin":0.81,"operativemargin":0.43,"netmargin":0.36,"returnonassets":0.06,"returnonequity":0.08,"externalmoneyratio":0.19,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":5.43,"acidratio":null,"simfinid":121021},{"id":5946,"ticker":"FB","enddate":"2021-03-31 00:00:00","period":"Q","grossmargin":0.8,"operativemargin":0.43,"netmargin":0.36,"returnonassets":0.06,"returnonequity":0.07,"externalmoneyratio":0.18,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":6.08,"acidratio":null,"simfinid":121021},{"id":5947,"ticker":"FB","enddate":"2020-12-31 00:00:00","period":"Q","grossmargin":0.81,"operativemargin":0.46,"netmargin":0.4,"returnonassets":0.07,"returnonequity":0.09,"externalmoneyratio":0.19,"interestcoverage":null,"totalcapitalizationratio":null,"currentratio":5.05,"acidratio":null,"simfinid":121021}]
+    const AMZN_incomes = [{"id":1162,"researchdevelopment":42740000,"effectofaccountingcharges":"0","incomebeforetax":24194000,"minorityinterest":0,"netincome":21331000,"sellinggeneraladministrative":87193000,"grossprofit":152757000,"ebit":22899000,"operatingincome":22899000,"otheroperatingexpenses":"-75000","interestexpense":-1647000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2863000,"totalrevenue":386064000,"totaloperatingexpenses":363165000,"costofrevenue":233307000,"totalotherincomeexpensenet":1295000,"discontinuedoperations":0,"netincomefromcontinuingops":21331000,"netincomeapplicabletocommonshares":21331000,"enddate":"2020-12-31 00:00:00","period":"FY","ticker":"AMZN","simfinid":62747},{"id":1163,"researchdevelopment":35931000,"effectofaccountingcharges":"0","incomebeforetax":13962000,"minorityinterest":0,"netincome":11588000,"sellinggeneraladministrative":64313000,"grossprofit":114986000,"ebit":14404000,"operatingincome":14404000,"otheroperatingexpenses":"338000","interestexpense":-1600000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2374000,"totalrevenue":280522000,"totaloperatingexpenses":266118000,"costofrevenue":165536000,"totalotherincomeexpensenet":-442000,"discontinuedoperations":0,"netincomefromcontinuingops":11588000,"netincomeapplicabletocommonshares":11588000,"enddate":"2019-12-31 00:00:00","period":"FY","ticker":"AMZN","simfinid":62747},{"id":1164,"researchdevelopment":28837000,"effectofaccountingcharges":"0","incomebeforetax":11270000,"minorityinterest":0,"netincome":10073000,"sellinggeneraladministrative":52177000,"grossprofit":93731000,"ebit":12421000,"operatingincome":12421000,"otheroperatingexpenses":"296000","interestexpense":-1417000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":1197000,"totalrevenue":232887000,"totaloperatingexpenses":220466000,"costofrevenue":139156000,"totalotherincomeexpensenet":-1151000,"discontinuedoperations":0,"netincomefromcontinuingops":10073000,"netincomeapplicabletocommonshares":10073000,"enddate":"2018-12-31 00:00:00","period":"FY","ticker":"AMZN","simfinid":62747},{"id":1165,"researchdevelopment":22620000,"effectofaccountingcharges":"0","incomebeforetax":3802000,"minorityinterest":0,"netincome":3033000,"sellinggeneraladministrative":38992000,"grossprofit":65932000,"ebit":4106000,"operatingincome":4106000,"otheroperatingexpenses":"214000","interestexpense":-848000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":769000,"totalrevenue":177866000,"totaloperatingexpenses":173760000,"costofrevenue":111934000,"totalotherincomeexpensenet":-304000,"discontinuedoperations":0,"netincomefromcontinuingops":3033000,"netincomeapplicabletocommonshares":3033000,"enddate":"2017-12-31 00:00:00","period":"FY","ticker":"AMZN","simfinid":62747},{"id":1166,"researchdevelopment":12097000,"effectofaccountingcharges":"0","incomebeforetax":4311000,"minorityinterest":0,"netincome":3156000,"sellinggeneraladministrative":30944000,"grossprofit":47882000,"ebit":4852000,"operatingincome":4852000,"otheroperatingexpenses":"-11000","interestexpense":-493000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":1155000,"totalrevenue":110812000,"totaloperatingexpenses":105960000,"costofrevenue":62930000,"totalotherincomeexpensenet":-541000,"discontinuedoperations":0,"netincomefromcontinuingops":3156000,"netincomeapplicabletocommonshares":3156000,"enddate":"2021-09-30 00:00:00","period":"Q","ticker":"AMZN","simfinid":62747},{"id":1167,"researchdevelopment":11794000,"effectofaccountingcharges":"0","incomebeforetax":8646000,"minorityinterest":0,"netincome":7778000,"sellinggeneraladministrative":29397000,"grossprofit":48904000,"ebit":7702000,"operatingincome":7702000,"otheroperatingexpenses":"11000","interestexpense":-435000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":868000,"totalrevenue":113080000,"totaloperatingexpenses":105378000,"costofrevenue":64176000,"totalotherincomeexpensenet":944000,"discontinuedoperations":0,"netincomefromcontinuingops":7778000,"netincomeapplicabletocommonshares":7778000,"enddate":"2021-06-30 00:00:00","period":"Q","ticker":"AMZN","simfinid":62747},{"id":1168,"researchdevelopment":10584000,"effectofaccountingcharges":"0","incomebeforetax":10263000,"minorityinterest":0,"netincome":8107000,"sellinggeneraladministrative":26628000,"grossprofit":46115000,"ebit":8865000,"operatingincome":8865000,"otheroperatingexpenses":"38000","interestexpense":-399000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2156000,"totalrevenue":108518000,"totaloperatingexpenses":99653000,"costofrevenue":62403000,"totalotherincomeexpensenet":1398000,"discontinuedoperations":0,"netincomefromcontinuingops":8107000,"netincomeapplicabletocommonshares":8107000,"enddate":"2021-03-31 00:00:00","period":"Q","ticker":"AMZN","simfinid":62747},{"id":1169,"researchdevelopment":16466000,"effectofaccountingcharges":"0","incomebeforetax":7787000,"minorityinterest":0,"netincome":7222000,"sellinggeneraladministrative":23428000,"grossprofit":46271000,"ebit":6873000,"operatingincome":6873000,"otheroperatingexpenses":"-496000","interestexpense":-414000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":565000,"totalrevenue":125555000,"totaloperatingexpenses":118682000,"costofrevenue":79284000,"totalotherincomeexpensenet":914000,"discontinuedoperations":0,"netincomefromcontinuingops":7222000,"netincomeapplicabletocommonshares":7222000,"enddate":"2020-12-31 00:00:00","period":"Q","ticker":"AMZN","simfinid":62747}]
+    const AAPL_incomes = [{"id":72,"researchdevelopment":21914000,"effectofaccountingcharges":"0","incomebeforetax":109207000,"minorityinterest":0,"netincome":94680000,"sellinggeneraladministrative":21973000,"grossprofit":152836000,"ebit":108949000,"operatingincome":108949000,"otheroperatingexpenses":"0","interestexpense":-2645000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":14527000,"totalrevenue":365817000,"totaloperatingexpenses":256868000,"costofrevenue":212981000,"totalotherincomeexpensenet":258000,"discontinuedoperations":0,"netincomefromcontinuingops":94680000,"netincomeapplicabletocommonshares":94680000,"enddate":"2021-09-25 00:00:00","period":"FY","ticker":"AAPL","simfinid":111052},{"id":73,"researchdevelopment":18752000,"effectofaccountingcharges":"0","incomebeforetax":67091000,"minorityinterest":0,"netincome":57411000,"sellinggeneraladministrative":19916000,"grossprofit":104956000,"ebit":66288000,"operatingincome":66288000,"otheroperatingexpenses":"0","interestexpense":-2873000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":9680000,"totalrevenue":274515000,"totaloperatingexpenses":208227000,"costofrevenue":169559000,"totalotherincomeexpensenet":803000,"discontinuedoperations":0,"netincomefromcontinuingops":57411000,"netincomeapplicabletocommonshares":57411000,"enddate":"2020-09-26 00:00:00","period":"FY","ticker":"AAPL","simfinid":111052},{"id":74,"researchdevelopment":16217000,"effectofaccountingcharges":"0","incomebeforetax":65737000,"minorityinterest":0,"netincome":55256000,"sellinggeneraladministrative":18245000,"grossprofit":98392000,"ebit":63930000,"operatingincome":63930000,"otheroperatingexpenses":"0","interestexpense":-3576000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":10481000,"totalrevenue":260174000,"totaloperatingexpenses":196244000,"costofrevenue":161782000,"totalotherincomeexpensenet":1807000,"discontinuedoperations":0,"netincomefromcontinuingops":55256000,"netincomeapplicabletocommonshares":55256000,"enddate":"2019-09-28 00:00:00","period":"FY","ticker":"AAPL","simfinid":111052},{"id":75,"researchdevelopment":14236000,"effectofaccountingcharges":"0","incomebeforetax":72903000,"minorityinterest":0,"netincome":59531000,"sellinggeneraladministrative":16705000,"grossprofit":101839000,"ebit":70898000,"operatingincome":70898000,"otheroperatingexpenses":"0","interestexpense":-3240000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":13372000,"totalrevenue":265595000,"totaloperatingexpenses":194697000,"costofrevenue":163756000,"totalotherincomeexpensenet":2005000,"discontinuedoperations":0,"netincomefromcontinuingops":59531000,"netincomeapplicabletocommonshares":59531000,"enddate":"2018-09-29 00:00:00","period":"FY","ticker":"AAPL","simfinid":111052},{"id":76,"researchdevelopment":5772000,"effectofaccountingcharges":"0","incomebeforetax":23248000,"minorityinterest":0,"netincome":20551000,"sellinggeneraladministrative":5616000,"grossprofit":35174000,"ebit":23786000,"operatingincome":23786000,"otheroperatingexpenses":"0","interestexpense":-672000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2697000,"totalrevenue":83360000,"totaloperatingexpenses":59574000,"costofrevenue":48186000,"totalotherincomeexpensenet":-538000,"discontinuedoperations":0,"netincomefromcontinuingops":20551000,"netincomeapplicabletocommonshares":20551000,"enddate":"2021-09-25 00:00:00","period":"Q","ticker":"AAPL","simfinid":111052},{"id":77,"researchdevelopment":5717000,"effectofaccountingcharges":"0","incomebeforetax":24369000,"minorityinterest":0,"netincome":21744000,"sellinggeneraladministrative":5412000,"grossprofit":35255000,"ebit":24126000,"operatingincome":24126000,"otheroperatingexpenses":"0","interestexpense":-665000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2625000,"totalrevenue":81434000,"totaloperatingexpenses":57308000,"costofrevenue":46179000,"totalotherincomeexpensenet":243000,"discontinuedoperations":0,"netincomefromcontinuingops":21744000,"netincomeapplicabletocommonshares":21744000,"enddate":"2021-06-26 00:00:00","period":"Q","ticker":"AAPL","simfinid":111052},{"id":78,"researchdevelopment":5262000,"effectofaccountingcharges":"0","incomebeforetax":28011000,"minorityinterest":0,"netincome":23630000,"sellinggeneraladministrative":5314000,"grossprofit":38079000,"ebit":27503000,"operatingincome":27503000,"otheroperatingexpenses":"0","interestexpense":-670000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":4381000,"totalrevenue":89584000,"totaloperatingexpenses":62081000,"costofrevenue":51505000,"totalotherincomeexpensenet":508000,"discontinuedoperations":0,"netincomefromcontinuingops":23630000,"netincomeapplicabletocommonshares":23630000,"enddate":"2021-03-27 00:00:00","period":"Q","ticker":"AAPL","simfinid":111052},{"id":79,"researchdevelopment":5163000,"effectofaccountingcharges":"0","incomebeforetax":33579000,"minorityinterest":0,"netincome":28755000,"sellinggeneraladministrative":5631000,"grossprofit":44328000,"ebit":33534000,"operatingincome":33534000,"otheroperatingexpenses":"0","interestexpense":-638000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":4824000,"totalrevenue":111439000,"totaloperatingexpenses":77905000,"costofrevenue":67111000,"totalotherincomeexpensenet":45000,"discontinuedoperations":0,"netincomefromcontinuingops":28755000,"netincomeapplicabletocommonshares":28755000,"enddate":"2020-12-26 00:00:00","period":"Q","ticker":"AAPL","simfinid":111052}]
+    const META_incomes = [{"id":5976,"researchdevelopment":18447000,"effectofaccountingcharges":"0","incomebeforetax":33180000,"minorityinterest":0,"netincome":29146000,"sellinggeneraladministrative":18155000,"grossprofit":69273000,"ebit":32671000,"operatingincome":32671000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":4034000,"totalrevenue":85965000,"totaloperatingexpenses":53294000,"costofrevenue":16692000,"totalotherincomeexpensenet":509000,"discontinuedoperations":0,"netincomefromcontinuingops":29146000,"netincomeapplicabletocommonshares":29146000,"enddate":"2020-12-31 00:00:00","period":"FY","ticker":"FB","simfinid":121021},{"id":5977,"researchdevelopment":13600000,"effectofaccountingcharges":"0","incomebeforetax":24812000,"minorityinterest":0,"netincome":18485000,"sellinggeneraladministrative":15341000,"grossprofit":57927000,"ebit":28986000,"operatingincome":28986000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":6327000,"totalrevenue":70697000,"totaloperatingexpenses":41711000,"costofrevenue":12770000,"totalotherincomeexpensenet":-4174000,"discontinuedoperations":0,"netincomefromcontinuingops":18485000,"netincomeapplicabletocommonshares":18485000,"enddate":"2019-12-31 00:00:00","period":"FY","ticker":"FB","simfinid":121021},{"id":5978,"researchdevelopment":10273000,"effectofaccountingcharges":"0","incomebeforetax":25361000,"minorityinterest":0,"netincome":22112000,"sellinggeneraladministrative":11297000,"grossprofit":46483000,"ebit":24913000,"operatingincome":24913000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":3249000,"totalrevenue":55838000,"totaloperatingexpenses":30925000,"costofrevenue":9355000,"totalotherincomeexpensenet":448000,"discontinuedoperations":0,"netincomefromcontinuingops":22112000,"netincomeapplicabletocommonshares":22111000,"enddate":"2018-12-31 00:00:00","period":"FY","ticker":"FB","simfinid":121021},{"id":5979,"researchdevelopment":7754000,"effectofaccountingcharges":"0","incomebeforetax":20594000,"minorityinterest":0,"netincome":15934000,"sellinggeneraladministrative":7242000,"grossprofit":35199000,"ebit":20203000,"operatingincome":20203000,"otheroperatingexpenses":"0","interestexpense":-6000,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":4660000,"totalrevenue":40653000,"totaloperatingexpenses":20450000,"costofrevenue":5454000,"totalotherincomeexpensenet":391000,"discontinuedoperations":0,"netincomefromcontinuingops":15934000,"netincomeapplicabletocommonshares":15920000,"enddate":"2017-12-31 00:00:00","period":"FY","ticker":"FB","simfinid":121021},{"id":5980,"researchdevelopment":6316000,"effectofaccountingcharges":"0","incomebeforetax":10565000,"minorityinterest":0,"netincome":9194000,"sellinggeneraladministrative":6500000,"grossprofit":23239000,"ebit":10423000,"operatingincome":10423000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":1371000,"totalrevenue":29010000,"totaloperatingexpenses":18587000,"costofrevenue":5771000,"totalotherincomeexpensenet":142000,"discontinuedoperations":0,"netincomefromcontinuingops":9194000,"netincomeapplicabletocommonshares":9194000,"enddate":"2021-09-30 00:00:00","period":"Q","ticker":"FB","simfinid":121021},{"id":5981,"researchdevelopment":6096000,"effectofaccountingcharges":"0","incomebeforetax":12513000,"minorityinterest":0,"netincome":10394000,"sellinggeneraladministrative":5215000,"grossprofit":23678000,"ebit":12367000,"operatingincome":12367000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2119000,"totalrevenue":29077000,"totaloperatingexpenses":16710000,"costofrevenue":5399000,"totalotherincomeexpensenet":146000,"discontinuedoperations":0,"netincomefromcontinuingops":10394000,"netincomeapplicabletocommonshares":10394000,"enddate":"2021-06-30 00:00:00","period":"Q","ticker":"FB","simfinid":121021},{"id":5982,"researchdevelopment":5197000,"effectofaccountingcharges":"0","incomebeforetax":11503000,"minorityinterest":0,"netincome":9497000,"sellinggeneraladministrative":4465000,"grossprofit":21040000,"ebit":11378000,"operatingincome":11378000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":2006000,"totalrevenue":26171000,"totaloperatingexpenses":14793000,"costofrevenue":5131000,"totalotherincomeexpensenet":125000,"discontinuedoperations":0,"netincomefromcontinuingops":9497000,"netincomeapplicabletocommonshares":9497000,"enddate":"2021-03-31 00:00:00","period":"Q","ticker":"FB","simfinid":121021},{"id":5983,"researchdevelopment":5207000,"effectofaccountingcharges":"0","incomebeforetax":13055000,"minorityinterest":0,"netincome":11219000,"sellinggeneraladministrative":4880000,"grossprofit":22862000,"ebit":12775000,"operatingincome":12775000,"otheroperatingexpenses":"0","interestexpense":0,"extraordinaryitems":"0","nonrecurring":"0","otheritems":"0","incometaxexpense":1836000,"totalrevenue":28072000,"totaloperatingexpenses":15297000,"costofrevenue":5210000,"totalotherincomeexpensenet":280000,"discontinuedoperations":0,"netincomefromcontinuingops":11219000,"netincomeapplicabletocommonshares":11219000,"enddate":"2020-12-31 00:00:00","period":"Q","ticker":"FB","simfinid":121021}]
+    let indicators = AAPL_indicators
+    let incomes = AAPL_incomes
+    let cashflows = AAPL_cashflows
+    let balances = AAPL_balances
+    if (inputTicker=="AMAZON") {
+      indicators = AMZN_indicators
+      incomes = AMZN_incomes
+      cashflows = AMZN_cashflows
+      balances = AMZN_balances
     }
-  };
+    else if (inputTicker == "META"){
+      indicators = META_indicators
+      incomes = META_incomes
+      cashflows = META_cashflows
+      balances = META_balances
+    }  
+    else if (inputTicker == "APPLE"){
+      indicators = AAPL_indicators
+      incomes = AAPL_incomes
+      cashflows = AAPL_cashflows
+      balances = AAPL_balances
+    }  
+      
+    if (Array.isArray(indicators)){
+        setRatios(
+        indicators
+          .sort((a, b) => {
+            return new Date(a.enddate) - new Date(b.enddate);
+          })
+          .map(transformDateFormat)
+          );
+          setIncome(
+           incomes
+              .sort((a, b) => {
+                return new Date(a.enddate) - new Date(b.enddate);
+              })
+              .map(transformDateFormat)
+          )  
+          setCashFlow(
+           cashflows
+              .sort((a, b) => {
+                return new Date(a.enddate) - new Date(b.enddate);
+              })
+              .map(transformDateFormat)
+          ) 
+          setBalance(
+           balances
+              .sort((a, b) => {
+                return new Date(a.enddate) - new Date(b.enddate);
+              })
+              .map(transformDateFormat)
+          )     
+        }
+        
+      }, [inputTicker]);
+      useEffect(()=> {
+                const addAvgtoBalances = (listOfBalances) => {
+          for (let i = 1; i < listOfBalances.length; i++) {
+            listOfBalances[i].avginventory =
+              (listOfBalances[i].inventory + listOfBalances[i - 1].inventory) / 2;
+            listOfBalances[i].avgpayable =
+              (listOfBalances[i].accountspayable +
+                listOfBalances[i - 1].accountspayable) /
+              2;
+            listOfBalances[i].avgnetreceivable =
+              (listOfBalances[i].netreceivables +
+                listOfBalances[i - 1].netreceivables) /
+              2;
+          }
+      
+          return listOfBalances;
+        };
+        const balanceQuarter = addAvgtoBalances(selectPeriod(balance, "Q"));
+        const balanceYear = addAvgtoBalances(selectPeriod(balance, "FY"));
+        const cashQuarter = selectPeriod(cashFlow, "Q");
+        const incomeQuarter = selectPeriod(income, "Q");
+        const incomeYear = selectPeriod(income, "FY");
+        const ratiosQuarter = selectPeriod(ratios, "Q");
+      
+      
+        const lastCurrentRatio = getLast(ratiosQuarter).currentratio;
+        const lastAcidRatio = getLast(ratiosQuarter).acidratio;
+        const cashBalance =
+          getLast(cashQuarter).totalcashfromoperatingactivities +
+          getLast(cashQuarter).totalcashflowsfrominvestingactivities +
+          getLast(cashQuarter).totalcashfromfinancingactivities;
+        const cashOperations =
+          getLast(cashQuarter).totalcashfromoperatingactivities;
+        const cashInvested =
+          getLast(cashQuarter).totalcashflowsfrominvestingactivities;
+        const cashFinancing = getLast(cashQuarter).totalcashfromfinancingactivities;
+      
+        const daysOuts = (data1, data2, Q = true) => {
+          var daysOutsList = [];
+          let days = 90;
+          if (Q === false) {
+            days = 365;
+          }
+          if (data1 !== "undifined" || data2 !== "undifined") {
+            for (let i = 1; i < data1.length; i++) {
+              const daySales = Math.round(
+                data1[i].avgnetreceivable / (data2[i].totalrevenue / days)
+              );
+              const daysInv = Math.round(
+                (data1[i].avginventory / data2[i].costofrevenue) * days
+              );
+              const daysPay = Math.round(
+                data1[i].avgpayable / (data2[i].totalrevenue / days)
+              );
+              const ccc = daySales + daysInv - daysPay;
+      
+              daysOutsList.push({
+                enddate: data1[i].enddate,
+                daysinvtouts: daysInv,
+                dayssalesouts: daySales,
+                dayspayouts: -daysPay,
+                ccc: ccc,
+              });
+            }
+          } else {
+            setTimeout(daysOuts, 250);
+          }
+      
+          return daysOutsList;
+        };
+        const daysOutstandingQuarter = daysOuts(balanceQuarter, incomeQuarter);
+        const daysOutstandingYear = daysOuts(balanceYear, incomeYear, false);
+        const daySalesOutstanding = getLast(daysOutstandingQuarter).dayssalesouts;
+        const daysInventoryOutstanding = getLast(
+          daysOutstandingQuarter
+        ).daysinvtouts;
+      
+        const daysPayablesOutstanding = getLast(daysOutstandingQuarter).dayspayouts;
+      
+        setCashData({
+          lastCurrentRatio,
+          lastAcidRatio,
+          cashBalance,
+          cashOperations,
+          cashInvested,
+          cashFinancing,
+          ratiosQuarter,
+          balanceQuarter,
+          cashQuarter,
+          daySalesOutstanding,
+          daysInventoryOutstanding,
+          daysPayablesOutstanding,
+          daysOutstandingQuarter,
+        });
+        
+        const histWorkingCapital = (data) => {
+          let histWork = [];
+          if (data !== "undefined") {
+            for (let i = 0; i < data.length; i++) {
+              const workingCapital =
+              data[i].totalcurrentassets - data[i].totalcurrentliabilities;
+              let obj = {
+                enddate: data[i].enddate,
+                workingcapital: workingCapital,
+              };
+              histWork.push(obj);
+            }
+            return histWork;
+          } else {
+            setTimeout(histWorkingCapital, 250);
+          }
+        };
+        const currentAssets = getLast(balanceQuarter).totalcurrentassets;
+        const cash = getLast(balanceQuarter).cash;
+        const accountsPayable = getLast(balanceQuarter).accountspayable;
+        const netReceivable = getLast(balanceQuarter).netreceivables;
+        const inventory = getLast(balanceQuarter).inventory;
+        const otherCurrentAssets = currentAssets - cash - netReceivable - inventory;
+        const currentLiab = getLast(balanceQuarter).totalcurrentliabilities;
+        const shortTermDebt = getLast(balanceQuarter).shortlongtermdebt;
+        const otherCurrentLiab = currentLiab - shortTermDebt - accountsPayable;
+        const workingCapital = currentAssets - currentLiab;
+        const historicalWorkingCapital = histWorkingCapital(balanceQuarter);
+        
+        setKpiData({
+          currentAssets,
+          cash,
+          inventory,
+          netReceivable,
+          otherCurrentAssets,
+          accountsPayable,
+          shortTermDebt,
+          currentLiab,
+          otherCurrentLiab,
+          daysOutstandingYear,
+          workingCapital,
+          historicalWorkingCapital,
+        });
+        
+        const lastIncomeQuarter = getLast(incomeQuarter);
+        const lastRatio = getLast(ratiosQuarter);
+        const lastOpex =
+        lastIncomeQuarter.totaloperatingexpenses / lastIncomeQuarter.totalrevenue;
+        setplData({
+          lastIncomeQuarter,
+          lastRatio,
+          lastOpex,
+          incomeQuarter,
+        });
+        const lastBalanceQuarter = getLast(balanceQuarter);
+        setFpData({
+          ratiosQuarter,
+          lastRatio,
+          balanceQuarter,
+          lastBalanceQuarter,
+          workingCapital,
+          historicalWorkingCapital,
+        });
+      },[balance,cashFlow,income,ratios])
+      
 
+
+            const getLast = (data) => {
+              if (data !== "undifined") {
+                if (!Array.isArray(data) || data.length === 0) {
+                  return 0;
+                }
+                return data.reduce((a, b) => {
+                  return new Date(a.enddate) > new Date(b.enddate) ? a : b;
+                });
+              } else {
+                setTimeout(getLast, 250);
+              }
+            };
+            
   const selectPeriod = (data, type) => {
     if (!Array.isArray(data)) {
       return 0;
     }
     return data.filter((object) => object.period === type);
   };
+  setTimeout(()=> {
+    setLoading(false)
+  },500)
+
+
+  
 
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <div className={classes.container}>
-          <TopBar props={{ open, setOpen, tickers, inputToTicker }}></TopBar>
-            <CashFlow cashData={cashData}></CashFlow>
-            <Kpi kpiData={kpiData}></Kpi>
-            <ProfitLoss plData={plData}></ProfitLoss>
-            <FinPerformance fpData={fpData}></FinPerformance>
-            <Copyright></Copyright>
-        
-        </div>
-      </BrowserRouter>
-    </ThemeProvider>
+    <div className="app">
+      <ThemeProvider theme={theme}>      
+          <div className="container">
+            <LeftBar></LeftBar> 
+            <div className="mainContainer">              
+              <TopBar appBarData={{inputTicker,setInputTicker}}></TopBar>
+  {            !loading ?   <div className="sections">
+                  <ProfitLoss plData={plData}></ProfitLoss>
+                  <Kpi kpiData={kpiData}></Kpi>
+                  <FinPerformance fpData={fpData}></FinPerformance>
+                  <CashFlow {...props} cashData={cashData}></CashFlow>            
+                </div> : null}
+            </div>       
+          </div>      
+      </ThemeProvider>
+
+    </div>
   );
 }
 

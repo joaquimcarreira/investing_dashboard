@@ -1,17 +1,17 @@
 import React from 'react'
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Container from "@mui/material/Container"
+
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
+
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { Line, Area, XAxis, YAxis, Bar, ResponsiveContainer, ReferenceLine, Tooltip, CartesianGrid, ComposedChart, LabelList, Label, LineChart } from 'recharts';
+import { Line, XAxis, YAxis, Bar, ResponsiveContainer, ReferenceLine, CartesianGrid, ComposedChart, LabelList, Label, LineChart } from 'recharts';
 
 
 
@@ -33,40 +33,16 @@ function Kpi(props) {
         historicalWorkingCapital
     } = props.kpiData
 
-    const toPercent = (decimal, fixed = 0) => `${Math.round((decimal * 100).toFixed(fixed))}%`;
 
-    const getPercent = (value, total) => {
-        const ratio = total > 0 ? value / total : 0;
 
-        return toPercent(ratio, 2);
-    };
 
-    const renderTooltipContent = (o) => {
-        const { payload, label } = o;
-        const total = payload.reduce((result, entry) => result + entry.value, 0);
-
-        return (
-            <div className="customized-tooltip-content">
-                <p className="total">{`${label} (Total: ${total})`}</p>
-                <ul className="list">
-                    {payload.map((entry, index) => (
-                        <li key={`item-${index}`} style={{ color: entry.color }}>
-                            {`${entry.name}: ${entry.value}(${getPercent(entry.value, total)})`}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        );
-    };
 
     const getLastItem = (data) => {
-        if (data !== "undefined") {
-            console.log(data)
-            return data.slice(-1)[0]
-        }
-        else {
-            setTimeout(getLastItem, 250)
-        }
+
+
+        return data.slice(-1)[0]
+
+
     }
 
     const getRange = () => {
@@ -80,13 +56,13 @@ function Kpi(props) {
 
     }
     return (
-        <Box>
+        <Box style={{ height: "100vh", maxWidth: "1168px", paddingTop: "40px" }} id="kpi">
             <Typography
-                color={"rgba(0,0,0,0.5)"}
-                noWrap
+                color={"rgba(255,255,255,1)"}
+
                 variant={"h6"}
                 sx={{ flexGrow: 1 }}
-                marginTop={"-20px"}
+                marginBtoom={"30px"}
             >
                 FINANCIAL KPI DASHBOARD
             </Typography>
@@ -97,11 +73,11 @@ function Kpi(props) {
                             p: 2,
                             display: 'flex',
                             flexDirection: 'column',
-                            height: "75vh"
+                            height: "80vh"
                         }}
                     >
                         <TableContainer>
-                            <Table>
+                            <Table style={{ overflow: "hidden", scrollbarWidth: "none" }}>
                                 <TableHead sx={{ background: "#8884d8" }} >
                                     <TableRow >
                                         <TableCell sx={{ color: "white", fontSize: "20px" }} >Current Assets</TableCell>
@@ -125,7 +101,7 @@ function Kpi(props) {
                                     <TableCell sx={{ fontSize: "15px" }}>Other Current Assets</TableCell>
                                     <TableCell sx={{ fontSize: "15px" }}>{otherCurrentAssets}</TableCell>
                                 </TableRow>
-                                <TableRow sx={{ textAlign: "center", color: "gray" }}><Typography variant='h3' >-</Typography></TableRow>
+                                <TableRow sx={{ textAlign: "center", color: "gray" }}><Typography variant='h5' >-</Typography></TableRow>
                                 <TableHead sx={{ background: "#adabe4" }} >
                                     <TableRow >
                                         <TableCell sx={{ color: "white", fontSize: "20px" }}>Current Liabilities</TableCell>
@@ -146,7 +122,7 @@ function Kpi(props) {
                                     <TableCell sx={{ fontSize: "15px" }}>{otherCurrentLiab}</TableCell>
                                 </TableRow>
 
-                                <TableRow sx={{ textAlign: "center", color: "gray" }}><Typography variant='h3' >=</Typography></TableRow>
+                                <TableRow sx={{ textAlign: "center", color: "gray" }}><Typography variant='h5' >=</Typography></TableRow>
                             </Table>
 
                             <Table>
@@ -200,13 +176,13 @@ function Kpi(props) {
                                             <Label angle={-90} fill="gray" fontSize={"13"} value={"DSO | DIO | DPO"} />
                                         </YAxis>
                                         <ReferenceLine yAxisId={"left"} y={0}></ReferenceLine>
-                                        <Bar dataKey="daysinvtouts" yAxisId="left" stackId="1" stroke="#8884d8" fill="#8884d8" isAnimationActive={false}><LabelList dataKey="daysinvtouts" fill='white' /></Bar>
-                                        <Bar dataKey="dayspayouts" yAxisId="left" stackId="1" stroke="#82ca9d" fill="#82ca9d" isAnimationActive={false} ><LabelList dataKey="dayspayouts" fill='white' /></Bar>
-                                        <Bar dataKey="dayssalesouts" yAxisId="left" stackId="1" stroke="#ffc658" fill="#ffc658" isAnimationActive={false}><LabelList dataKey="dayssalesouts" fill='white' /></Bar>
-                                        <YAxis yAxisId="right" dataKey={"ccc"} orientation="right" padding={{ bottom: 15 }} axisLine={false} isAnimationActive={false} tickLine={false}>
+                                        <Bar dataKey="daysinvtouts" yAxisId="left" stackId="1" stroke="#8884d8" fill="#8884d8" ><LabelList dataKey="daysinvtouts" fill='white' /></Bar>
+                                        <Bar dataKey="dayspayouts" yAxisId="left" stackId="1" stroke="#82ca9d" fill="#82ca9d"  ><LabelList dataKey="dayspayouts" fill='white' /></Bar>
+                                        <Bar dataKey="dayssalesouts" yAxisId="left" stackId="1" stroke="#ffc658" fill="#ffc658" ><LabelList dataKey="dayssalesouts" fill='white' /></Bar>
+                                        <YAxis yAxisId="right" dataKey={"ccc"} orientation="right" padding={{ bottom: 15 }} axisLine={false} tickLine={false}>
                                             <Label angle={90} fill="gray" fontSize={"13"} value={"CCC"} />
                                         </YAxis>
-                                        <Line dataKey="ccc" yAxisId="right" stroke='#7D0633' isAnimationActive={false} strokeWidth={3}></Line>
+                                        <Line dataKey="ccc" yAxisId="right" stroke='#7D0633' strokeWidth={3}></Line>
 
                                     </ComposedChart>
                                 </ResponsiveContainer>
@@ -231,7 +207,7 @@ function Kpi(props) {
                                         <CartesianGrid strokeDasharray="1 5" />
                                         <XAxis dataKey="enddate" axisLine={false} tickLine={false} tickMargin={10}></XAxis>
                                         <YAxis domain={["dataMin", "dataMax"]} axisLine={false} tickLine={false} tickMargin={10} fontSize={15} ></YAxis>
-                                        <Line dataKey="workingcapital" isAnimationActive={false}></Line>
+                                        <Line dataKey="workingcapital"></Line>
                                     </LineChart>
                                 </ResponsiveContainer>
                             </Box>
@@ -239,6 +215,18 @@ function Kpi(props) {
                     </Grid>
                 </Grid>
             </Grid>
+            <Typography
+                variant="body2"
+                color={"white"}
+                align="center"
+                marginTop="20px"
+                {...props}
+            >
+                {"Copyright © Joaquim Carreira "}
+
+                {new Date().getFullYear()}
+                {"."}
+            </Typography>
         </Box>
 
     )
