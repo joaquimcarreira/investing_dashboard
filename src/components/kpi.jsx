@@ -176,13 +176,13 @@ function Kpi(props) {
                                             <Label angle={-90} fill="gray" fontSize={"13"} value={"DSO | DIO | DPO"} />
                                         </YAxis>
                                         <ReferenceLine yAxisId={"left"} y={0}></ReferenceLine>
-                                        <Bar dataKey="daysinvtouts" yAxisId="left" stackId="1" stroke="#8884d8" fill="#8884d8" isAnimationActive={false}><LabelList dataKey="daysinvtouts" fill='white' /></Bar>
-                                        <Bar dataKey="dayspayouts" yAxisId="left" stackId="1" stroke="#82ca9d" fill="#82ca9d" isAnimationActive={false} ><LabelList dataKey="dayspayouts" fill='white' /></Bar>
-                                        <Bar dataKey="dayssalesouts" yAxisId="left" stackId="1" stroke="#ffc658" fill="#ffc658" isAnimationActive={false}><LabelList dataKey="dayssalesouts" fill='white' /></Bar>
-                                        <YAxis yAxisId="right" dataKey={"ccc"} orientation="right" padding={{ bottom: 15 }} axisLine={false} isAnimationActive={false} tickLine={false}>
+                                        <Bar dataKey="daysinvtouts" yAxisId="left" stackId="1" stroke="#8884d8" fill="#8884d8" ><LabelList dataKey="daysinvtouts" fill='white' /></Bar>
+                                        <Bar dataKey="dayspayouts" yAxisId="left" stackId="1" stroke="#82ca9d" fill="#82ca9d"  ><LabelList dataKey="dayspayouts" fill='white' /></Bar>
+                                        <Bar dataKey="dayssalesouts" yAxisId="left" stackId="1" stroke="#ffc658" fill="#ffc658" ><LabelList dataKey="dayssalesouts" fill='white' /></Bar>
+                                        <YAxis yAxisId="right" dataKey={"ccc"} orientation="right" padding={{ bottom: 15 }} axisLine={false} tickLine={false}>
                                             <Label angle={90} fill="gray" fontSize={"13"} value={"CCC"} />
                                         </YAxis>
-                                        <Line dataKey="ccc" yAxisId="right" stroke='#7D0633' isAnimationActive={false} strokeWidth={3}></Line>
+                                        <Line dataKey="ccc" yAxisId="right" stroke='#7D0633' strokeWidth={3}></Line>
 
                                     </ComposedChart>
                                 </ResponsiveContainer>
@@ -207,7 +207,7 @@ function Kpi(props) {
                                         <CartesianGrid strokeDasharray="1 5" />
                                         <XAxis dataKey="enddate" axisLine={false} tickLine={false} tickMargin={10}></XAxis>
                                         <YAxis domain={["dataMin", "dataMax"]} axisLine={false} tickLine={false} tickMargin={10} fontSize={15} ></YAxis>
-                                        <Line dataKey="workingcapital" isAnimationActive={false}></Line>
+                                        <Line dataKey="workingcapital"></Line>
                                     </LineChart>
                                 </ResponsiveContainer>
                             </Box>

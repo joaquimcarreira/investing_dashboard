@@ -16,7 +16,6 @@ import {
 function FinPerformance(props) {
     const { ratiosQuarter,
         lastRatio,
-
         lastBalanceQuarter,
         historicalWorkingCapital } = props.fpData
     const theme = useTheme()
@@ -58,7 +57,7 @@ function FinPerformance(props) {
                                     <BarChart data={ratiosQuarter}>
                                         <Bar barSize={20}
                                             fill="#E79E4F"
-                                            isAnimationActive={false}
+
                                             dataKey={"returnonassets"}>
 
                                         </Bar>
@@ -82,7 +81,7 @@ function FinPerformance(props) {
                                 <ResponsiveContainer>
                                     <LineChart data={historicalWorkingCapital}>
                                         <Line barSize={20}
-                                            isAnimationActive={false}
+
                                             stroke="#E79E4F"
                                             dataKey={"workingcapital"}>
                                         </Line>
@@ -100,12 +99,12 @@ function FinPerformance(props) {
                             alignItems: "center"
                         }}>
                             <Typography >RETURN ON EQUITY</Typography>
-                            <Typography variant='h3'>{lastRatio.returnonequity * 100}%</Typography>
+                            <Typography variant='h3'>{Math.round(lastRatio.returnonequity * 100)}%</Typography>
                             <Box height={"40%"} width={"90%"}>
                                 <ResponsiveContainer>
                                     <LineChart data={ratiosQuarter}>
                                         <Line barSize={20}
-                                            isAnimationActive={false}
+
                                             stroke="#E79E4F"
                                             dataKey={"returnonassets"}>
                                         </Line>
@@ -129,7 +128,7 @@ function FinPerformance(props) {
                                     <BarChart data={ratiosQuarter}>
                                         <Bar barSize={20}
                                             fill="#E79E4F"
-                                            isAnimationActive={false}
+
                                             dataKey={"totalcapitalizationratio"}>
                                         </Bar>
                                         <XAxis axisLine={false} tickLine={false} dataKey={"enddate"}></XAxis>

@@ -63,7 +63,7 @@ function ProfitLoss(props) {
                                     <Pie data={[{ value: lastRatio.grossmargin }, { value: (1 - lastRatio.grossmargin) }]}
                                         innerRadius={"70%"} outerRadius={"90%"}
                                         stroke='#8884d8' paddingAngle={5}
-                                        isAnimationActive={false}
+
                                         dataKey="value" startAngle={225} endAngle={-45}>
                                         <Cell fill='#8884d8'></Cell>
                                         <Cell fill={theme.palette.primary.main} stroke='#8884d8' strokeDasharray={"2 6"}></Cell>
@@ -84,7 +84,7 @@ function ProfitLoss(props) {
                                     <Pie data={[{ value: lastOpex }, { value: (1 - lastOpex) }]}
                                         innerRadius={"70%"} outerRadius={"90%"}
                                         stroke='#E79E4F' paddingAngle={5}
-                                        isAnimationActive={false}
+
                                         dataKey="value" startAngle={225} endAngle={-45}>
                                         <Cell fill='#E79E4F'></Cell>
                                         <Cell fill={theme.palette.primary.main} stroke='#E79E4F' strokeDasharray={"2 6"}></Cell>
@@ -105,7 +105,7 @@ function ProfitLoss(props) {
                                     <Pie data={[{ value: lastRatio.operativemargin }, { value: (1 - lastRatio.operativemargin) }]}
                                         innerRadius={"70%"} outerRadius={"90%"}
                                         stroke="#8dd1e1" paddingAngle={5}
-                                        isAnimationActive={false}
+
                                         dataKey="value" startAngle={225} endAngle={-45}>
                                         <Cell fill='#8dd1e1'></Cell>
                                         <Cell fill={theme.palette.primary.main} stroke='#8dd1e1' strokeDasharray={"2 6"}></Cell>
@@ -127,7 +127,7 @@ function ProfitLoss(props) {
                                         innerRadius={"70%"} outerRadius={"90%"}
                                         stroke="#82ca9d" paddingAngle={5}
                                         dataKey="value" startAngle={225} endAngle={-45}
-                                        isAnimationActive={false}
+
                                     >
                                         <Cell fill='#82ca9d'></Cell>
                                         <Cell fill={theme.palette.primary.main} stroke='#82ca9d' strokeDasharray={"2 6"}></Cell>
@@ -151,7 +151,7 @@ function ProfitLoss(props) {
                                         <YAxis axisLine={false} tickLine={false} domain={[dataMin => 0.95 * dataMin, dataMax => 1.05 * dataMax]} />
                                         <XAxis dataKey={"enddate"} tickLine={false} axisLine={false} />
                                         <CartesianGrid strokeDasharray="1 5" />
-                                        <Bar dataKey={"totaloperatingexpenses"} barSize={20} fill='#E79E4F' isAnimationActive={false}></Bar>
+                                        <Bar dataKey={"totaloperatingexpenses"} barSize={20} fill='#E79E4F' ></Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
                             </Box>
@@ -167,7 +167,7 @@ function ProfitLoss(props) {
                                         <YAxis axisLine={false} tickLine={false} domain={[dataMin => 0.95 * dataMin, dataMax => 1.05 * dataMax]} />
                                         <XAxis dataKey={"enddate"} tickLine={false} axisLine={false} />
                                         <CartesianGrid strokeDasharray="1 5" />
-                                        <Bar dataKey={"ebit"} barSize={20} fill='#8dd1e1' isAnimationActive={false}></Bar>
+                                        <Bar dataKey={"ebit"} barSize={20} fill='#8dd1e1' ></Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
                             </Box>
@@ -180,7 +180,7 @@ function ProfitLoss(props) {
                         <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%" }}>
                             <ResponsiveContainer height={"90%"}>
                                 <FunnelChart>
-                                    <Funnel data={funnelData} dataKey="value" isAnimationActive={false}>
+                                    <Funnel data={funnelData} dataKey="value">
                                     </Funnel>
                                 </FunnelChart>
                             </ResponsiveContainer>

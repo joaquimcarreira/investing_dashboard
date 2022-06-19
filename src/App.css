@@ -17,11 +17,13 @@
   height: 100%;
   overflow: hidden;
   background: black;
-
+  position: relative;
+  left: 10px
 }
 
 .mainContainer {
   display: flex;
   position: relative;
-  left: 7%;
+
+  left: 70px;
 }

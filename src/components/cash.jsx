@@ -62,7 +62,7 @@ function CashFlow(props) {
                                     <Box width={"50%"}>
                                         <ResponsiveContainer >
                                             <LineChart data={ratiosQuarter}>
-                                                <Line dataKey="acidratio" stroke="#E79E4F" fill="#E79E4F" isAnimationActive={false} strokeWidth={2} ></Line>
+                                                <Line dataKey="acidratio" stroke="#E79E4F" fill="#E79E4F" strokeWidth={2} ></Line>
                                                 <YAxis domain={["dataMin", "dataMax"]} hide={true} />
                                             </LineChart>
                                         </ResponsiveContainer>
@@ -76,7 +76,7 @@ function CashFlow(props) {
                                     <Box width={"50%"}>
                                         <ResponsiveContainer >
                                             <LineChart data={ratiosQuarter}>
-                                                <Line dataKey="currentratio" type="monotone" stroke="#E79E4F" fill="#E79E4F" isAnimationActive={false} strokeWidth={2}></Line>
+                                                <Line dataKey="currentratio" type="monotone" stroke="#E79E4F" fill="#E79E4F" strokeWidth={2}></Line>
                                                 <YAxis domain={["dataMin", "dataMax"]} hide={true} />
 
                                             </LineChart>
@@ -125,7 +125,7 @@ function CashFlow(props) {
                                     <BarChart data={cashQuarter}>
                                         <XAxis dataKey="enddate" axisLine={false} tickLine={false} />
                                         <YAxis dataKey="changeincash" axisLine={false} tickLine={false} domain={['auto', 'auto']} />
-                                        <Bar dataKey="changeincash" type="monotone" isAnimationActive={false} fill="#E79E4F" barSize={40}></Bar>
+                                        <Bar dataKey="changeincash" type="monotone" fill="#E79E4F" barSize={40}></Bar>
                                         <CartesianGrid strokeDasharray="1 7" />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -145,7 +145,7 @@ function CashFlow(props) {
                                         <XAxis dataKey="enddate" axisLine={false} tickLine={false} />
                                         <YAxis dataKey="dayssalesouts" axisLine={false} tickLine={false} domain={[dataMin => 0.97 * dataMin, dataMax => 1.02 * dataMax]}
                                             tickMargin={4} allowDecimals={false} angle={-30} />
-                                        <Bar dataKey={"dayssalesouts"} barSize={20} fill="#E79E4F" isAnimationActive={false}></Bar>
+                                        <Bar dataKey={"dayssalesouts"} barSize={20} fill="#E79E4F" ></Bar>
                                         <CartesianGrid strokeDasharray="1 7" />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -163,8 +163,8 @@ function CashFlow(props) {
                                 <ResponsiveContainer>
                                     <LineChart data={balanceQuarter} >
                                         <YAxis dataKey="inventory" domain={["dataMin", "dataMax"]} tickMargin={4} axisLine={false} tickLine={false} padding={{ bottom: 20 }} angle={-30} />
-                                        <XAxis dataKey="enddate" label={{ value: "INVENTORY", position: 'top' }} axisLine={false} tickLine={false} />
-                                        <Line dataKey="inventory" type="monotone" isAnimationActive={false} stroke="#E79E4F" ></Line>
+                                        <XAxis dataKey="enddate" l axisLine={false} tickLine={false} />
+                                        <Line dataKey="inventory" type="monotone" stroke="#E79E4F" ></Line>
                                         <CartesianGrid strokeDasharray="1 7" />
                                     </LineChart>
                                 </ResponsiveContainer>
@@ -183,7 +183,7 @@ function CashFlow(props) {
                                         <XAxis dataKey="enddate" axisLine={false} tickLine={false} />
                                         <YAxis dataKey="dayspayouts" axisLine={false} tickLine={false} domain={[dataMin => 0.5 * dataMin, dataMax => 1.5 * dataMax]}
                                             tickMargin={4} allowDecimals={false} angle={-30} />
-                                        <Bar dataKey={"dayspayouts"} barSize={20} fill="#E79E4F" isAnimationActive={false}></Bar>
+                                        <Bar dataKey={"dayspayouts"} barSize={20} fill="#E79E4F" ></Bar>
                                         <CartesianGrid strokeDasharray="1 7" />
                                     </BarChart>
                                 </ResponsiveContainer>
