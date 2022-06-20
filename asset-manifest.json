@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/investing_dashboard/static/css/main.8bdb3e25.chunk.css",
+    "main.js": "/investing_dashboard/static/js/main.45a2792d.chunk.js",
+    "main.js.map": "/investing_dashboard/static/js/main.45a2792d.chunk.js.map",
+    "runtime-main.js": "/investing_dashboard/static/js/runtime-main.d7ff975f.js",
+    "runtime-main.js.map": "/investing_dashboard/static/js/runtime-main.d7ff975f.js.map",
+    "static/js/2.1b3818aa.chunk.js": "/investing_dashboard/static/js/2.1b3818aa.chunk.js",
+    "static/js/2.1b3818aa.chunk.js.map": "/investing_dashboard/static/js/2.1b3818aa.chunk.js.map",
+    "index.html": "/investing_dashboard/index.html",
+    "static/css/main.8bdb3e25.chunk.css.map": "/investing_dashboard/static/css/main.8bdb3e25.chunk.css.map",
+    "static/js/2.1b3818aa.chunk.js.LICENSE.txt": "/investing_dashboard/static/js/2.1b3818aa.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d7ff975f.js",
+    "static/js/2.1b3818aa.chunk.js",
+    "static/css/main.8bdb3e25.chunk.css",
+    "static/js/main.45a2792d.chunk.js"
+  ]
+}
